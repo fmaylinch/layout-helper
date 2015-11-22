@@ -139,9 +139,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="// http://192.168.1.33:5000/layout.swift" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="KyW-F0-KOC" userLabel="Code">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="KyW-F0-KOC" userLabel="Code">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <color key="backgroundColor" red="0.1294193203" green="0.215087061" blue="0.40670838650000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <string key="text">// Add (supported) sentences direclty here
+let someView = UIView()
+
+// or through a remote file via http url like:
+// http://192.168.1.33:5000/layout.swift</string>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="no" spellCheckingType="no"/>

@@ -33,46 +33,43 @@ class PreviewController: UIViewController {
             
             guard !foundError else { return }
             
-            print("parsing line: \(line)")
+            print("  >> \(line)")
             parse(line)
         }
     }
     
     private func parse(line:String) {
         
-        if let result = match(PreviewController.letRegex, str: line) {
+        if let result = match(Regex.letView, line) {
             processLet(line, result)
-        } else if let result = match(PreviewController.letLabelRegex, str: line) {
+        } else if let result = match(Regex.letLabel, line) {
             processLetLabel(line, result)
-        } else if let result = match(PreviewController.letLayoutRegex, str: line) {
+        } else if let result = match(Regex.letLayout, line) {
             processLetLayout(line, result)
-        } else if let result = match(PreviewController.letColorRegex, str: line) {
+        } else if let result = match(Regex.letColor, line) {
             processLetColor(line, result)
-        } else if let result = match(PreviewController.addViewsRegex, str: line) {
+        } else if let result = match(Regex.addViews, line) {
             processAddViews(line, result)
-        } else if let result = match(PreviewController.addConstraintsRegex, str: line) {
+        } else if let result = match(Regex.addConstraints, line) {
             processAddConstraints(line, result)
-        } else if let result = match(PreviewController.setWrapRegex, str: line) {
+        } else if let result = match(Regex.setWrap, line) {
             processSetWrap(line, result)
-        } else if let result = match(PreviewController.setTextRegex, str: line) {
+        } else if let result = match(Regex.setText, line) {
             processSetText(line, result)
-        } else if let result = match(PreviewController.setTextColorRegex, str: line) {
+        } else if let result = match(Regex.setTextColor, line) {
             processSetTextColor(line, result)
-        } else if let result = match(PreviewController.setBackgroundColorRegex, str: line) {
+        } else if let result = match(Regex.setBackgroundColor, line) {
             processSetBackgroundColor(line, result)
             
-        } else if line.hasPrefix("//") {
+        } else if hasMatch(Regex.comment, line) {
             // Ignore comment, or read url
-            if line.hasPrefix("// http") {
-                let url = line.substring(3, line.characters.count)
+            if let result = match(Regex.url, line) {
+                let url = line.substring(result.rangeAtIndex(1))
                 parseUrl(url)
             }
-        } else {
-            // Ignore line if empty (TODO: ignore comment)
-            let cleaned = line.stringByReplacingOccurrencesOfString(" ", withString: "")
-            if cleaned.characters.count > 0 {
-                displayError("Unknown sentence: \(line)")
-            }
+            
+        } else if !hasMatch(Regex.empty, line) {
+            displayError("Unknown sentence: \(line)")
         }
     }
     
@@ -82,15 +79,7 @@ class PreviewController: UIViewController {
         
         let url = NSURL(string: urlStr)
         
-        // Add activity indicator in the middle
-        let ai = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-        ai.startAnimating()
-        let main = getLayout("main")!
-        main.addView(ai, key: "ai")
-        main.addConstraints([
-            "X:ai.centerX == superview.centerX",
-            "X:ai.centerY == superview.centerY"])
-        
+        let ai = displayActivityIndicator()
         
         // let request = NSURLRequest(URL: url!, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: 20)
         let session = NSURLSession.sharedSession()
@@ -102,20 +91,34 @@ class PreviewController: UIViewController {
                 ai.removeFromSuperview()
             })
 
-            if error != nil {
-                self.displayError("Error reading url `\(urlStr)`: \(error)")
-            } else {
+            if error == nil {
                 
                 let result = NSString(data: data!, encoding: NSUTF8StringEncoding)!
-                print("Got result from request: \(result)")
+                print("Received result from request")
                 
                 dispatch_async(dispatch_get_main_queue(),{
                     self.parseText(result as String)
                 })
+                
+            } else {
+                self.displayError("Error reading url `\(urlStr)`: \(error)")
             }
         }
         
         task.resume()
+    }
+    
+    private func displayActivityIndicator() -> UIActivityIndicatorView {
+        
+        let ai = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+        ai.startAnimating()
+        let main = getLayout("main")!
+        main.addView(ai, key: "ai")
+        main.addConstraints([
+            "X:ai.centerX == superview.centerX",
+            "X:ai.centerY == superview.centerY"])
+        
+        return ai
     }
     
     // Creates a UIView or UILabel
@@ -216,8 +219,10 @@ class PreviewController: UIViewController {
 
         var viewsMap = [String:UIView]()
         
-        for keyValue in keysValues.split(", ") {
-            if let result = match(PreviewController.keyValueRegex, str: keyValue) {
+        for keyValue in keysValues.split(", ")
+        {
+            if let result = match(Regex.keyValue, keyValue)
+            {
                 let key = keyValue.substring(result.rangeAtIndex(1))
                 let viewName = keyValue.substring(result.rangeAtIndex(2))
                 if let view = views[viewName] {
@@ -244,7 +249,7 @@ class PreviewController: UIViewController {
         for quotedConstraint in constraints.split(", ") {
             // Get rid of surrounding quotes ""
             let constraint = quotedConstraint.substring(1, -1)
-            print("- Adding constraint `\(constraint)` (cleaned from `\(quotedConstraint)`)")
+            print("- Adding constraint \"\(constraint)\"")
             layout.addConstraint(constraint)
         }
     }
@@ -273,6 +278,7 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let text = line.substring(result.rangeAtIndex(2))
         
+        print("Setting text `\(text)` to view `\(variable)`")
         guard let label = getLabel(variable) else { return }
         label.text = text
     }
@@ -283,6 +289,7 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let colorName = line.substring(result.rangeAtIndex(2))
         
+        print("Setting text color `\(colorName)` to label `\(variable)`")
         guard let label = getLabel(variable) else { return }
         label.textColor = getColor(colorName)
     }
@@ -293,6 +300,7 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let colorName = line.substring(result.rangeAtIndex(2))
         
+        print("Setting background color `\(colorName)` to view `\(variable)`")
         guard let view = getView(variable) else { return }
         view.backgroundColor = getColor(colorName)
     }
@@ -335,7 +343,8 @@ class PreviewController: UIViewController {
     
     // Regular expressions
     
-    private func match(regex: NSRegularExpression, str: String) -> NSTextCheckingResult? {
+    private func match(regex: NSRegularExpression, _ str: String) -> NSTextCheckingResult? {
+        
         let results = regex.matchesInString(str, options: NSMatchingOptions(), range: NSMakeRange(0, str.characters.count))
         if results.count == 1 {
             return results[0]
@@ -346,42 +355,51 @@ class PreviewController: UIViewController {
             return nil
         }
     }
-
-    // example: let v1 = UIView()
-    private static var letRegex = PreviewController.regex("let +(\(Id)) *= *(\(Id))\\(\\)")
-    // example: let label = ViewUtil.labelWithSize(20)
-    private static var letLabelRegex = PreviewController.regex("let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(Number))\\)")
-    // example: let lay = LayoutHelper(view: v1)
-    private static var letLayoutRegex = PreviewController.regex("let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\)(?:\\.withRandomColors\\((true|false)\\))?")
-    // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
-    private static var letColorRegex = PreviewController.regex("let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(Number)), *green: *(\(Number)), *blue: *(\(Number)), *alpha: (\(Number))\\)")
     
-    // example: lay.addViews(["t1":t1, "t2":t2]) -- array content must be treated later
-    private static var addViewsRegex = PreviewController.regex("(\(Id))\\.addViews\\(\\[(.+)\\]\\)")
-    // example: "t1":t1
-    private static var keyValueRegex = PreviewController.regex("\"(\(Id))\" *: *(\(Id))")
-    // example: lay.addConstraints(["H:|[t1]|", "V:|[t1]|"]) -- array content must be treated later
-    private static var addConstraintsRegex = PreviewController.regex("(\(Id))\\.addConstraints\\(\\[(.+)\\]\\)")
-    // example: lay.setWrapContent("t2", axis: .Horizontal)
-    private static var setWrapRegex = PreviewController.regex("(\(Id))\\.setWrapContent\\(\"(\(Id))\", *axis: *(\\.(Horizontal)|(Vertical))\\)")
-
-    // example: label.text = "hello"
-    private static var setTextRegex = PreviewController.regex("(\(Id))\\.text *= *\"(.*)\"")
-    // example: label.textColor = color
-    private static var setTextColorRegex = PreviewController.regex("(\(Id))\\.textColor *= *(\(Id))")
-    // example: view.backgroundColor = color
-    private static var setBackgroundColorRegex = PreviewController.regex("(\(Id))\\.backgroundColor *= *(\(Id))")
-
+    private func hasMatch(regex: NSRegularExpression, _ str: String) -> Bool {
+        return match(regex, str) != nil
+    }
     
-    // identifier pattern (variable, method, class, etc.)
-    private static let Id: String = "[_a-zA-Z][_a-zA-Z0-9]+"
-    // float number pattern e.g. "12", "12.", "2.56"
-    private static let Number: String = "\\d+\\.?\\d*"
+    private class Regex {
+        
+        // identifier pattern (variable, method, class, etc.)
+        static let Id: String = "[_a-zA-Z][_a-zA-Z0-9]+"
+        // float number pattern e.g. "12", "12.", "2.56"
+        static let Number: String = "\\d+\\.?\\d*"
 
-    
-    private static func regex(pattern: String) -> NSRegularExpression {
-        print("Peparing regex: \(pattern)")
-        return try! NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions())
+        // example: let v1 = UIView()
+        static let letView = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
+        // example: let label = ViewUtil.labelWithSize(20)
+        static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(Number))\\) *$")
+        // example: let lay = LayoutHelper(view: v1)
+        static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\)(?:\\.withRandomColors\\((true|false)\\))? *$")
+        // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
+        static var letColor = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(Number)), *green: *(\(Number)), *blue: *(\(Number)), *alpha: (\(Number))\\) *$")
+        
+        // example: lay.addViews(["t1":t1, "t2":t2]) -- array content must be treated later
+        static var addViews = Regex.parse("^ *(\(Id))\\.addViews\\(\\[(.+)\\]\\) *$")
+        // example: "t1":t1
+        static var keyValue = Regex.parse("\"(\(Id))\" *: *(\(Id))")
+        // example: lay.addConstraints(["H:|[t1]|", "V:|[t1]|"]) -- array content must be treated later
+        static var addConstraints = Regex.parse("(\(Id))\\.addConstraints\\(\\[(.+)\\]\\) *$")
+        // example: lay.setWrapContent("t2", axis: .Horizontal)
+        static var setWrap = Regex.parse("^ *(\(Id))\\.setWrapContent\\(\"(\(Id))\", *axis: *(\\.(Horizontal)|(Vertical))\\) *$")
+        
+        // example: label.text = "hello"
+        static var setText = Regex.parse("^ *(\(Id))\\.text *= *\"(.*)\" *$")
+        // example: label.textColor = color
+        static var setTextColor = Regex.parse("^ *(\(Id))\\.textColor *= *(\(Id)) *$")
+        // example: view.backgroundColor = color
+        static var setBackgroundColor = Regex.parse("^ *(\(Id))\\.backgroundColor *= *(\(Id)) *$")
+        
+        static var comment = Regex.parse("^ *//")
+        static var url = Regex.parse("^ *// *(http[^ ]+)")
+        static var empty = Regex.parse("^ *$")
+        
+        static func parse(pattern: String) -> NSRegularExpression {
+            print("Peparing regex: \(pattern)")
+            return try! NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions())
+        }
     }
 
     private func displayError(message: String) {
