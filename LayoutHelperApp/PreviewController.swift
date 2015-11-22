@@ -13,6 +13,9 @@ class PreviewController: UIViewController {
     private var views = [String:UIView]()
     private var colors = [String:UIColor]()
     
+    // Dirty way of avoiding throws
+    private var foundError = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,6 +30,9 @@ class PreviewController: UIViewController {
         let lines = text.split("\n")
         
         for line in lines {
+            
+            guard !foundError else { return }
+            
             print("parsing line: \(line)")
             parse(line)
         }
@@ -65,7 +71,7 @@ class PreviewController: UIViewController {
             // Ignore line if empty (TODO: ignore comment)
             let cleaned = line.stringByReplacingOccurrencesOfString(" ", withString: "")
             if cleaned.characters.count > 0 {
-                fatalError("Unknown sentence: \(line)")
+                displayError("Unknown sentence: \(line)")
             }
         }
     }
@@ -79,20 +85,25 @@ class PreviewController: UIViewController {
         // Add activity indicator in the middle
         let ai = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
         ai.startAnimating()
-        let main = getLayout("main")
+        let main = getLayout("main")!
         main.addView(ai, key: "ai")
         main.addConstraints([
             "X:ai.centerX == superview.centerX",
             "X:ai.centerY == superview.centerY"])
         
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+        
+        // let request = NSURLRequest(URL: url!, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: 20)
+        let session = NSURLSession.sharedSession()
+        
+        // NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {(response, data, error) in
+        let task = session.dataTaskWithURL(url!) {(data, response, error) in
 
             dispatch_async(dispatch_get_main_queue(),{
                 ai.removeFromSuperview()
             })
 
             if error != nil {
-                print("Error reading url `\(urlStr)`: \(error)")
+                self.displayError("Error reading url `\(urlStr)`: \(error)")
             } else {
                 
                 let result = NSString(data: data!, encoding: NSUTF8StringEncoding)!
@@ -114,7 +125,8 @@ class PreviewController: UIViewController {
         let clazz = line.substring(result.rangeAtIndex(2))
         
         guard !views.keys.contains(variable) else {
-            fatalError("There's already a view with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a view with the name `\(variable)`. Line: \(line)")
+            return
         }
 
         if clazz == "UIView" {
@@ -124,7 +136,7 @@ class PreviewController: UIViewController {
             print("Creating label `\(variable)`")
             views[variable] = UILabel()
         } else {
-            fatalError("Unsupported class \(clazz)")
+            displayError("Unsupported class \(clazz)")
         }
     }
 
@@ -136,7 +148,8 @@ class PreviewController: UIViewController {
         let size = (sizeStr as NSString).floatValue
 
         guard !views.keys.contains(variable) else {
-            fatalError("There's already a view with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a view with the name `\(variable)`. Line: \(line)")
+            return
         }
 
         print("Creating label `\(variable)` with size `\(size)`")
@@ -156,14 +169,15 @@ class PreviewController: UIViewController {
             && line.substring(result.rangeAtIndex(3)) == "true"
 
         guard !layouts.keys.contains(variable) else {
-            fatalError("There's already a layout with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a layout with the name `\(variable)`. Line: \(line)")
+            return
         }
 
         if let view = views[viewName] {
             print("Creating layout `\(variable)` with view `\(viewName)`")
             layouts[variable] = LayoutHelper(view: view).withRandomColors(withRandomColors)
         } else {
-            fatalError("View with name `\(viewName)` not found. Did you create it? Line: \(line)")
+            displayError("View with name `\(viewName)` not found. Did you create it? Line: \(line)")
         }
     }
 
@@ -181,7 +195,8 @@ class PreviewController: UIViewController {
         let alpha = (alphaStr as NSString).floatValue
         
         guard !colors.keys.contains(variable) else {
-            fatalError("There's already a color with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a color with the name `\(variable)`. Line: \(line)")
+            return
         }
         
         print("Creating color `\(variable)` with rgb(\(red),\(green),\(blue)) and alpha \(alpha)")
@@ -197,7 +212,7 @@ class PreviewController: UIViewController {
         let keysValues = line.substring(result.rangeAtIndex(2))
         
         print("Adding views to layout `\(variable)`")
-        let layout = getLayout(variable)
+        guard let layout = getLayout(variable) else { return }
 
         var viewsMap = [String:UIView]()
         
@@ -209,7 +224,7 @@ class PreviewController: UIViewController {
                     print("- Adding view `\(viewName)` with key \"\(key)\"")
                     viewsMap[key] = view
                 } else {
-                    fatalError("There's no view with the name `\(viewName)`. Pair: `\(keyValue)`. Line: \(line)")
+                    displayError("There's no view with the name `\(viewName)`. Pair: `\(keyValue)`. Line: \(line)")
                 }
             }
         }
@@ -224,7 +239,7 @@ class PreviewController: UIViewController {
         let constraints = line.substring(result.rangeAtIndex(2))
         
         print("Adding views to layout `\(variable)`")
-        let layout = getLayout(variable)
+        guard let layout = getLayout(variable) else { return }
         
         for quotedConstraint in constraints.split(", ") {
             // Get rid of surrounding quotes ""
@@ -242,9 +257,9 @@ class PreviewController: UIViewController {
         let axisStr = line.substring(result.rangeAtIndex(3))
         
         print("Setting \(axisStr) wrap to view \"\(viewKey)\" in layout `\(variable)`")
-        let layout = getLayout(variable)
         
-        let view = getView(viewKey)
+        guard let layout = getLayout(variable) else { return }
+        guard let view = getView(viewKey) else { return }
         
         let axis = axisStr == ".Horizontal" ?
             UILayoutConstraintAxis.Horizontal : UILayoutConstraintAxis.Vertical
@@ -258,7 +273,7 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let text = line.substring(result.rangeAtIndex(2))
         
-        let label = getLabel(variable)
+        guard let label = getLabel(variable) else { return }
         label.text = text
     }
 
@@ -268,8 +283,7 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let colorName = line.substring(result.rangeAtIndex(2))
         
-        let label = getLabel(variable)
-        
+        guard let label = getLabel(variable) else { return }
         label.textColor = getColor(colorName)
     }
 
@@ -279,33 +293,42 @@ class PreviewController: UIViewController {
         let variable = line.substring(result.rangeAtIndex(1))
         let colorName = line.substring(result.rangeAtIndex(2))
         
-        let view = getView(variable)
-        
+        guard let view = getView(variable) else { return }
         view.backgroundColor = getColor(colorName)
     }
 
 
-    private func getLabel(name: String) -> UILabel {
+    private func getLabel(name: String) -> UILabel? {
         let view = getView(name)
         if view is UILabel {
-            return view as! UILabel
+            return view as? UILabel
         } else {
-            fatalError("View `\(name)` is not a label")
+            displayError("View `\(name)` is not a label")
+            return nil
         }
     }
 
-    private func getView(name: String) -> UIView {
-        guard let view = views[name] else { fatalError("There's no view with the name `\(name)`") }
+    private func getView(name: String) -> UIView? {
+        guard let view = views[name] else {
+            displayError("There's no view with the name `\(name)`")
+            return nil
+        }
         return view
     }
 
-    private func getColor(name: String) -> UIColor {
-        guard let color = colors[name] else { fatalError("There's no color with the name `\(name)`") }
+    private func getColor(name: String) -> UIColor? {
+        guard let color = colors[name] else {
+            displayError("There's no color with the name `\(name)`")
+            return nil
+        }
         return color
     }
 
-    private func getLayout(name: String) -> LayoutHelper {
-        guard let layout = layouts[name] else { fatalError("There's no layout with the name `\(name)`") }
+    private func getLayout(name: String) -> LayoutHelper? {
+        guard let layout = layouts[name] else {
+            displayError("There's no layout with the name `\(name)`")
+            return nil
+        }
         return layout
     }
 
@@ -319,7 +342,8 @@ class PreviewController: UIViewController {
         } else if results.count == 0 {
             return nil
         } else {
-            fatalError("Unexpected result count \(results.count) for: \(str)")
+            displayError("Unexpected result count \(results.count) for: \(str)")
+            return nil
         }
     }
 
@@ -360,6 +384,19 @@ class PreviewController: UIViewController {
         return try! NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions())
     }
 
+    private func displayError(message: String) {
+        
+        foundError = true
+
+        let alert = UIAlertController(title: "error", message: message, preferredStyle: .Alert)
+        
+        let action = UIAlertAction(title: "OK", style: .Default, handler: {action in
+            alert.dismissViewControllerAnimated(true, completion: nil)
+        })
+        alert.addAction(action)
+        
+        presentViewController(alert, animated: true, completion: nil)
+    }
     
     
     // Tests, not used in the program
@@ -377,7 +414,7 @@ class PreviewController: UIViewController {
         
         print("Running hardcoded test")
         
-        let main = getLayout("main")
+        let main = getLayout("main")!
        
         // from here is parseable code
         
