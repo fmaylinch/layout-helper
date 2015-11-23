@@ -48,12 +48,16 @@ class PreviewController: UIViewController {
             processLetLayout(line, result)
         } else if let result = match(Regex.letColor, line) {
             processLetColor(line, result)
+            
+        } else if let result = match(Regex.withRandomColors, line) {
+            processWithRandomColors(line, result)
         } else if let result = match(Regex.addViews, line) {
             processAddViews(line, result)
         } else if let result = match(Regex.addConstraints, line) {
             processAddConstraints(line, result)
         } else if let result = match(Regex.setWrap, line) {
             processSetWrap(line, result)
+            
         } else if let result = match(Regex.setText, line) {
             processSetText(line, result)
         } else if let result = match(Regex.setTextColor, line) {
@@ -164,21 +168,17 @@ class PreviewController: UIViewController {
     // Creates a LayoutHelper
     private func processLetLayout(line: String, _ result: NSTextCheckingResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
+        let layoutName = getLayoutName(group(result, line, 1))
         let viewName = line.substring(result.rangeAtIndex(2))
         
-        // This regex part is optional
-        let withRandomColors = result.rangeAtIndex(3).location != NSNotFound
-            && line.substring(result.rangeAtIndex(3)) == "true"
-
-        guard !layouts.keys.contains(variable) else {
-            displayError("There's already a layout with the name `\(variable)`. Line: \(line)")
+        guard !layouts.keys.contains(layoutName) else {
+            displayError("There's already a layout with the name `\(layoutName)`. Line: \(line)")
             return
         }
 
         if let view = views[viewName] {
-            print("Creating layout `\(variable)` with view `\(viewName)`")
-            layouts[variable] = LayoutHelper(view: view).withRandomColors(withRandomColors)
+            print("Creating layout `\(layoutName)` with view `\(viewName)`")
+            layouts[layoutName] = LayoutHelper(view: view)
         } else {
             displayError("View with name `\(viewName)` not found. Did you create it? Line: \(line)")
         }
@@ -207,15 +207,28 @@ class PreviewController: UIViewController {
         
         colors[variable] = color
     }
-
+    
+    // Adds wrap constraints to a view
+    private func processWithRandomColors(line: String, _ result: NSTextCheckingResult) {
+        
+        let layoutName = getLayoutName(group(result, line, 1))
+        let withRandomColors = group(result, line, 2)! == "true"
+        
+        print("\(withRandomColors ? "Enabling" : "Disabling") random colors in layout `\(layoutName)`")
+        
+        guard let layout = getLayout(layoutName) else { return }
+        
+        layout.withRandomColors(withRandomColors)
+    }
+    
     // Adds views to a LayoutHelper
     private func processAddViews(line: String, _ result: NSTextCheckingResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
+        let layoutName = getLayoutName(group(result, line, 1))
         let keysValues = line.substring(result.rangeAtIndex(2))
         
-        print("Adding views to layout `\(variable)`")
-        guard let layout = getLayout(variable) else { return }
+        print("Adding views to layout `\(layoutName)`")
+        guard let layout = getLayout(layoutName) else { return }
 
         var viewsMap = [String:UIView]()
         
@@ -240,11 +253,11 @@ class PreviewController: UIViewController {
     // Adds constraints to a LayoutHelper
     private func processAddConstraints(line: String, _ result: NSTextCheckingResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
+        let layoutName = getLayoutName(group(result, line, 1))
         let constraints = line.substring(result.rangeAtIndex(2))
         
-        print("Adding views to layout `\(variable)`")
-        guard let layout = getLayout(variable) else { return }
+        print("Adding views to layout `\(layoutName)`")
+        guard let layout = getLayout(layoutName) else { return }
         
         for quotedConstraint in constraints.split(", ") {
             // Get rid of surrounding quotes ""
@@ -257,13 +270,13 @@ class PreviewController: UIViewController {
     // Adds wrap constraints to a view
     private func processSetWrap(line: String, _ result: NSTextCheckingResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
+        let layoutName = getLayoutName(group(result, line, 1))
         let viewKey = line.substring(result.rangeAtIndex(2))
         let axisStr = line.substring(result.rangeAtIndex(3))
         
-        print("Setting \(axisStr) wrap to view \"\(viewKey)\" in layout `\(variable)`")
+        print("Setting \(axisStr) wrap to view \"\(viewKey)\" in layout `\(layoutName)`")
         
-        guard let layout = getLayout(variable) else { return }
+        guard let layout = getLayout(layoutName) else { return }
         guard let view = getView(viewKey) else { return }
         
         let axis = axisStr == ".Horizontal" ?
@@ -332,11 +345,28 @@ class PreviewController: UIViewController {
         return color
     }
 
+    private var previousLayoutName : String?
+    
+    private func getLayoutName(name: String?) -> String {
+
+        guard let resolvedName = name ?? previousLayoutName else {
+            displayError("Unexpected chained expression, can't tell the layout you want to access")
+            return "(unknown)"
+        }
+
+        // TODO: we will actually allow misplaced chaining
+        previousLayoutName = resolvedName
+
+        return resolvedName
+    }
+    
     private func getLayout(name: String) -> LayoutHelper? {
+        
         guard let layout = layouts[name] else {
             displayError("There's no layout with the name `\(name)`")
             return nil
         }
+        
         return layout
     }
 
@@ -360,6 +390,16 @@ class PreviewController: UIViewController {
         return match(regex, str) != nil
     }
     
+    private func group(result:NSTextCheckingResult, _ str:String, _ index:Int) -> String? {
+        
+        let range = result.rangeAtIndex(index)
+        if range.location != NSNotFound {
+            return str.substring(range)
+        } else {
+            return nil
+        }
+    }
+
     private class Regex {
         
         // identifier pattern (variable, method, class, etc.)
@@ -372,18 +412,20 @@ class PreviewController: UIViewController {
         // example: let label = ViewUtil.labelWithSize(20)
         static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(Number))\\) *$")
         // example: let lay = LayoutHelper(view: v1)
-        static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\)(?:\\.withRandomColors\\((true|false)\\))? *$")
+        static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\) *$")
         // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
         static var letColor = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(Number)), *green: *(\(Number)), *blue: *(\(Number)), *alpha: (\(Number))\\) *$")
         
+        // example: lay.withRandomColors(true)
+        static var withRandomColors = Regex.parse("^ *(\(Id))?\\.withRandomColors\\((true|false)\\)")
         // example: lay.addViews(["t1":t1, "t2":t2]) -- array content must be treated later
-        static var addViews = Regex.parse("^ *(\(Id))\\.addViews\\(\\[(.+)\\]\\) *$")
+        static var addViews = Regex.parse("^ *(\(Id))?\\.addViews\\(\\[(.+)\\]\\) *$")
         // example: "t1":t1
         static var keyValue = Regex.parse("\"(\(Id))\" *: *(\(Id))")
         // example: lay.addConstraints(["H:|[t1]|", "V:|[t1]|"]) -- array content must be treated later
-        static var addConstraints = Regex.parse("(\(Id))\\.addConstraints\\(\\[(.+)\\]\\) *$")
+        static var addConstraints = Regex.parse("(\(Id))?\\.addConstraints\\(\\[(.+)\\]\\) *$")
         // example: lay.setWrapContent("t2", axis: .Horizontal)
-        static var setWrap = Regex.parse("^ *(\(Id))\\.setWrapContent\\(\"(\(Id))\", *axis: *(\\.(Horizontal)|(Vertical))\\) *$")
+        static var setWrap = Regex.parse("^ *(\(Id))?\\.setWrapContent\\(\"(\(Id))\", *axis: *(\\.(Horizontal)|(Vertical))\\) *$")
         
         // example: label.text = "hello"
         static var setText = Regex.parse("^ *(\(Id))\\.text *= *\"(.*)\" *$")
