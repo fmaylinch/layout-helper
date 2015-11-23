@@ -18,7 +18,7 @@ check.textColor = whiteColor
 check.textAlignment = .Center
 
 let club = ViewUtil.labelWithSize(11)
-club.text = "CLUB\nBASIC"
+club.text = "CLUB\nPREMIUM"
 club.textColor = whiteColor
 club.textAlignment = .Center
 club.numberOfLines = 0
@@ -39,5 +39,6 @@ let lay = LayoutHelper(view: container)
     .addConstraints(["H:|[dummy][inc]|", "V:|[dummy]|", "V:|[inc]|"])
     .setWrapContent("inc", axis: .Horizontal)
 
+mainView.backgroundColor = blackColor
 main.addViews(["container": container])
 main.addConstraints(["H:|[container]|", "V:|-[container(60)]"])

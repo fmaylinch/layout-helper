@@ -1,15 +1,29 @@
 
-// Controller to preview the layout
+/**
+ * Controller to preview the layout
+ *
+ * TODO: more properties like:
+ *
+ * label.layer.borderColor = UIColor.whiteColor().CGColor
+ * label.layer.borderWidth = 1
+ * label.layer.cornerRadius = 7
+ * label.layer.masksToBounds = true
+ */
 
 import UIKit
 
 class PreviewController: UIViewController {
     
+    let MainLayoutName = "main"
+    let MainViewName = "mainView"
+
     @IBOutlet weak var preview: UIView!
     var code : String!
     
+    var mainLayout : LayoutHelper!
+    
     // keep the objects created in the code
-    private var layouts = [String:LayoutHelper]() // by default includes "main"
+    private var layouts = [String:LayoutHelper]()
     private var views = [String:UIView]()
     private var colors = [String:UIColor]()
     
@@ -19,7 +33,27 @@ class PreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        layouts["main"] = LayoutHelper(view: preview) // we add a main layout with the preview view
+        mainLayout = LayoutHelper(view: preview)
+        resetView()
+    }
+    
+    @IBAction func reloadCode(sender: AnyObject) {
+        print("Reset view")
+        resetView()
+    }
+    
+    private func resetView() {
+        
+        layouts.removeAll()
+        views.removeAll()
+        colors.removeAll()
+        
+        for view in preview.subviews {
+            view.removeFromSuperview()
+        }
+        
+        layouts[MainLayoutName] = mainLayout
+        views[MainViewName] = mainLayout.view
         
         // hardcodedTest()
         parseText(code)
@@ -58,7 +92,7 @@ class PreviewController: UIViewController {
         Regex.setTextColor : processSetTextColor,
         Regex.setBackgroundColor : processSetBackgroundColor,
 
-        Regex.comment : processCom
+        Regex.comment : processComment
     ]
     
     private func parse(line:String) {
@@ -124,7 +158,7 @@ class PreviewController: UIViewController {
     }
     
     // Ignores comment, or reads url if comment has a http url
-    private func processCom(result: RegexResult) {
+    private func processComment(result: RegexResult) {
         
         if let result = match(Regex.url, result.str) {
             let url = result.group(1)!
@@ -503,7 +537,7 @@ class PreviewController: UIViewController {
         
         print("Running hardcoded test")
         
-        let main = getLayout("main")!
+        let main = getLayout(MainLayoutName)!
        
         // from here is parseable code
         
