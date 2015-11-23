@@ -5,6 +5,8 @@ import UIKit
 
 public class LayoutHelper {
     
+    /** Use this identifier to refer to parent view in extended contraints (you can change it) */
+    public static var parentViewKey = "parent"
     public static let XtConstraintPrefix = "X"
     public static let DefaultPriority: UILayoutPriority = 0
     
@@ -28,13 +30,13 @@ public class LayoutHelper {
     public func fillWithView(view: UIView) -> LayoutHelper {
         return addView(view, key: "v").addConstraints(["H:|[v]|", "V:|[v]|"])
     }
-
+    
     public func fillWithView(view: UIView, margins:UIEdgeInsets) -> LayoutHelper {
         return addView(view, key: "v")
             .withMetrics(["l":margins.left, "t":margins.top, "r":margins.right, "b":margins.bottom])
             .addConstraints(["H:|-(l)-[v]-(r)-|", "V:|-(t)-[v]-(b)-|"])
     }
-
+    
     public func addViews(views: [String:UIView]) -> LayoutHelper {
         return addViews(views, addToParent:true)
     }
@@ -49,9 +51,9 @@ public class LayoutHelper {
     public func addView(view:UIView, key:String) -> LayoutHelper {
         return addView(view, key: key, addToParent:true)
     }
-        
+    
     public func addView(view:UIView, key:String, addToParent:Bool) -> LayoutHelper {
-
+        
         subviews[key] = view
         
         if !addToParent { return self }
@@ -65,14 +67,14 @@ public class LayoutHelper {
         
         return self
     }
-
+    
     // Various
     
     public func withRandomColors(displayRandomColors: Bool) -> LayoutHelper {
         self.displayRandomColors = displayRandomColors
         return self
     }
-
+    
     public func withMetrics(metrics: [String:CGFloat]) -> LayoutHelper {
         self.metrics = metrics
         return self
@@ -80,29 +82,29 @@ public class LayoutHelper {
     
     // Hugging and compression - http://stackoverflow.com/questions/33842797
     
-    /** Tries to simulate Android's wrap_content by setting hugging and compression to view */
+    /** Tries to simulate Android's wrap_content by setting hugging and compression to view and direct children */
     public func setWrapContent(viewKey:String, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         let view = findViewFromKey(viewKey)
         return setWrapContent(view, axis: axis)
     }
-
-    /** Tries to simulate Android's wrap_content by setting hugging and compression to view */
+    
+    /** Tries to simulate Android's wrap_content by setting hugging and compression to view and direct children */
     public func setWrapContent(view:UIView, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         setHugging(view, priority: UILayoutPriorityDefaultHigh, axis: axis)
         setResistance(view, priority: UILayoutPriorityRequired, axis: axis)
         return self
     }
-
-    /** Sets hugging priority to view with given key and all its subviews. */
+    
+    /** Sets hugging priority to view with given key and direct children */
     public func setHugging(viewKey:String, priority:UILayoutPriority, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         let view = findViewFromKey(viewKey)
         return setHugging(view, priority: priority, axis: axis)
     }
-
-    /** Sets hugging priority to view and all its subviews. */
+    
+    /** Sets hugging priority to view and direct children */
     public func setHugging(view:UIView, priority:UILayoutPriority, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         view.setContentHuggingPriority(priority, forAxis: axis)
@@ -111,15 +113,15 @@ public class LayoutHelper {
         }
         return self
     }
-
-    /** Sets compression resistance priority to view with given key and all its subviews. */
+    
+    /** Sets compression resistance priority to view with given key and direct children */
     public func setResistance(viewKey:String, priority:UILayoutPriority, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         let view = findViewFromKey(viewKey)
         return setResistance(view, priority: priority, axis: axis)
     }
     
-    /** Sets compression resistance priority to view and all its subviews. */
+    /** Sets compression resistance priority to view and direct children */
     public func setResistance(view:UIView, priority:UILayoutPriority, axis: UILayoutConstraintAxis) -> LayoutHelper {
         
         view.setContentCompressionResistancePriority(priority, forAxis: axis)
@@ -129,20 +131,20 @@ public class LayoutHelper {
         return self
     }
     
-
+    
     // Constraints
     
     public func addConstraints(cs:[String]) -> LayoutHelper {
         return addConstraints(cs, priority: LayoutHelper.DefaultPriority)
     }
-
+    
     public func addConstraints(cs:[String], priority:UILayoutPriority) -> LayoutHelper {
         for c in cs {
             addConstraint(c, priority: priority)
         }
         return self
     }
-
+    
     public func addConstraint(c:String) -> LayoutHelper {
         return addConstraint(c, priority:LayoutHelper.DefaultPriority)
     }
@@ -252,7 +254,7 @@ public class LayoutHelper {
     
     private func findViewFromKey(key: String) -> UIView
     {
-        if (key == "superview") {
+        if (key == LayoutHelper.parentViewKey) {
             return self.view
         }
         else {
@@ -283,10 +285,10 @@ public class LayoutHelper {
             fatalError(reason)
         }
     }
- 
+    
     private static let relations : [String:NSLayoutRelation] = [
         "==": .Equal, ">=": .GreaterThanOrEqual, "<=": .LessThanOrEqual]
-
+    
     private func parseRelation(relationStr: String) -> NSLayoutRelation
     {
         if let value = LayoutHelper.relations[relationStr] {
@@ -299,12 +301,12 @@ public class LayoutHelper {
     }
     
     private static var xtConstraintRegex = LayoutHelper.prepareRegex()
-
+    
     private static func prepareRegex() -> NSRegularExpression {
         
         // C identifier
         let identifier: String = "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
-        // VIEW_KEY.ATTR or (use "superview" as VIEW_KEY to refer to superview)
+        // VIEW_KEY.ATTR or (use LayoutHelper.parentViewKey as VIEW_KEY to refer to parent view)
         let attr: String = "(\(identifier))\\.(\(identifier))"
         // Relations taken from NSLayoutRelation
         let relation: String = "([=><]+)"
@@ -320,7 +322,7 @@ public class LayoutHelper {
         
         return try! NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions.CaseInsensitive)
     }
-
+    
     private func getRandomColorWithAlpha(alpha: CGFloat) -> UIColor
     {
         let red = arc4random_uniform(256)

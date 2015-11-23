@@ -2,25 +2,42 @@
 // This file is ignored in the project.
 // Load this file in the CodeController, either directly or via url.
 
-let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.5)
-let color2 = ViewUtil.color(red: 20, green: 150, blue: 150, alpha: 0.5)
+let mainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
+let whiteColor = ViewUtil.color(red: 255, green: 255, blue: 255, alpha: 1)
+let blackColor = ViewUtil.color(red: 0, green: 0, blue: 0, alpha: 1)
 
-let t1 = ViewUtil.labelWithSize(20)
-t1.text = "wrapped!"
-//t1.textColor = color
+let container = UIView()
+container.backgroundColor = whiteColor
 
-let t2 = ViewUtil.labelWithSize(20)
-t2.text = "What happens if this text is long"
-//t2.backgroundColor = color
+let includedView = UIView()
+includedView.backgroundColor = mainColor
 
-let v1 = UIView()
-v1.backgroundColor = color2
+let check = ViewUtil.labelWithSize(18)
+check.text = "V"
+check.textColor = whiteColor
+check.textAlignment = .Center
 
-let lay = LayoutHelper(view: v1)
-    .withRandomColors(true)
-    .addViews(["t1":t1, "t2":t2])
-    .addConstraints(["H:|-[t1]-[t2]-|", "V:|-[t1]-|", "V:|-[t2]-|"])
-    .setWrapContent("t1", axis: .Horizontal)
+let club = ViewUtil.labelWithSize(11)
+club.text = "CLUB\nBASIC"
+club.textColor = whiteColor
+club.textAlignment = .Center
+club.numberOfLines = 0
 
-main.addViews(["v1": v1])
-main.addConstraints(["H:|-[v1]-|", "V:|-[v1]"])
+let incLay = LayoutHelper(view:includedView)
+    .withRandomColors(false)
+    .addViews(["check":check, "club":club])
+    .addConstraints(["H:|-[check]-|", "H:|-[club]-|"])
+    .addConstraints(["V:|-(5)-[check][club]-(5)-|"])
+    .setWrapContent("check", axis: .Vertical)
+
+let dummy = ViewUtil.labelWithSize(20)
+dummy.text = "dummy2"
+
+let lay = LayoutHelper(view: container)
+    .withRandomColors(false)
+    .addViews(["dummy":dummy, "inc":includedView])
+    .addConstraints(["H:|[dummy][inc]|", "V:|[dummy]|", "V:|[inc]|"])
+    .setWrapContent("inc", axis: .Horizontal)
+
+main.addViews(["container": container])
+main.addConstraints(["H:|[container]|", "V:|-[container(60)]"])

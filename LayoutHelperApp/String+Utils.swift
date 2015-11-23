@@ -1,10 +1,5 @@
-//
-//  String+Utils.swift
-//  LayoutHelperApp
-//
-//  Created by Ferran Maylinch on 22/11/15.
-//  Copyright © 2015 fmaylinch. All rights reserved.
-//
+
+/** Some util extensions for String */
 
 import Foundation
 

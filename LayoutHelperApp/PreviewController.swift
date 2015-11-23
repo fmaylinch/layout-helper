@@ -60,6 +60,10 @@ class PreviewController: UIViewController {
             
         } else if let result = match(Regex.setText, line) {
             processSetText(result)
+        } else if let result = match(Regex.setNumberOfLines, line) {
+            processSetNumberOfLines(result)
+        } else if let result = match(Regex.setTextAlignment, line) {
+            processSetTextAlignment(result)
         } else if let result = match(Regex.setTextColor, line) {
             processSetTextColor(result)
         } else if let result = match(Regex.setBackgroundColor, line) {
@@ -119,8 +123,8 @@ class PreviewController: UIViewController {
         let main = getLayout("main")!
         main.addView(ai, key: "ai")
         main.addConstraints([
-            "X:ai.centerX == superview.centerX",
-            "X:ai.centerY == superview.centerY"])
+            "X:ai.centerX == parent.centerX",
+            "X:ai.centerY == parent.centerY"])
         
         return ai
     }
@@ -272,12 +276,11 @@ class PreviewController: UIViewController {
         print("Setting \(axisStr) wrap to view \"\(viewKey)\" in layout `\(layoutName)`")
         
         guard let layout = getLayout(layoutName) else { return }
-        guard let view = getView(viewKey) else { return }
         
         let axis = axisStr == ".Horizontal" ?
             UILayoutConstraintAxis.Horizontal : UILayoutConstraintAxis.Vertical
         
-        layout.setWrapContent(view, axis: axis)
+        layout.setWrapContent(viewKey, axis: axis)
     }
 
     // Sets text to a label
@@ -285,12 +288,46 @@ class PreviewController: UIViewController {
         
         let variable = result.group(1)!
         let text = result.group(2)!
+            .stringByReplacingOccurrencesOfString("\\n", withString: "\n") // dirty replacing
         
         print("Setting text `\(text)` to view `\(variable)`")
         guard let label = getLabel(variable) else { return }
         label.text = text
     }
 
+    // Sets numberOfLines to a label
+    private func processSetNumberOfLines(result: RegexResult) {
+        
+        let variable = result.group(1)!
+        let number = result.groupAsInt(2)!
+        
+        print("Setting `\(number)` number of lines to label `\(variable)`")
+        guard let label = getLabel(variable) else { return }
+        label.numberOfLines = number
+    }
+ 
+    // Sets alignment to a label
+    private func processSetTextAlignment(result: RegexResult) {
+        
+        let variable = result.group(1)!
+        let alignStr = result.group(2)!
+        
+        func getAlignment(str: String) -> NSTextAlignment {
+            switch (str) {
+            case ".Center":    return .Center
+            case ".Left":      return .Left
+            case ".Right":     return .Right
+            case ".Justified": return .Justified
+            case ".Natural":   return .Natural
+            default: fatalError("Unexpected alignment `\(str)`")
+            }
+        }
+        
+        print("Setting alignment `\(alignStr)` to label `\(variable)`")
+        guard let label = getLabel(variable) else { return }
+        label.textAlignment = getAlignment(alignStr)
+    }
+    
     // Sets text color to a label
     private func processSetTextColor(result: RegexResult) {
         
@@ -388,16 +425,18 @@ class PreviewController: UIViewController {
         // identifier pattern (variable, method, class, etc.)
         static let Id: String = "[_a-zA-Z][_a-zA-Z0-9]+"
         // float number pattern e.g. "12", "12.", "2.56"
-        static let Number: String = "\\d+\\.?\\d*"
+        static let FloatNum: String = "\\d+\\.?\\d*"
+        // integer number pattern e.g. "1", "75", "200"
+        static let IntNum: String = "0|[1-9]\\d*"
 
         // example: let v1 = UIView()
         static let letView = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
         // example: let label = ViewUtil.labelWithSize(20)
-        static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(Number))\\) *$")
+        static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(FloatNum))\\) *$")
         // example: let lay = LayoutHelper(view: v1)
         static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\) *$")
         // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
-        static var letColor = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(Number)), *green: *(\(Number)), *blue: *(\(Number)), *alpha: (\(Number))\\) *$")
+        static var letColor = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(IntNum)), *green: *(\(IntNum)), *blue: *(\(IntNum)), *alpha: (\(FloatNum))\\) *$")
         
         // example: lay.withRandomColors(true)
         static var withRandomColors = Regex.parse("^ *(\(Id))?\\.withRandomColors\\((true|false)\\)")
@@ -406,12 +445,16 @@ class PreviewController: UIViewController {
         // example: "t1":t1
         static var keyValue = Regex.parse("\"(\(Id))\" *: *(\(Id))")
         // example: lay.addConstraints(["H:|[t1]|", "V:|[t1]|"]) -- array content must be treated later
-        static var addConstraints = Regex.parse("(\(Id))?\\.addConstraints\\(\\[(.+)\\]\\) *$")
+        static var addConstraints = Regex.parse("^ *(\(Id))?\\.addConstraints\\(\\[(.+)\\]\\) *$")
         // example: lay.setWrapContent("t2", axis: .Horizontal)
-        static var setWrap = Regex.parse("^ *(\(Id))?\\.setWrapContent\\(\"(\(Id))\", *axis: *(\\.(Horizontal)|(Vertical))\\) *$")
+        static var setWrap = Regex.parse("^ *(\(Id))?\\.setWrapContent\\(\"(\(Id))\", *axis: *((\\.Horizontal)|(\\.Vertical))\\) *$")
         
         // example: label.text = "hello"
         static var setText = Regex.parse("^ *(\(Id))\\.text *= *\"(.*)\" *$")
+        // example: label.numberOfLines = 2
+        static var setNumberOfLines = Regex.parse("^ *(\(Id))\\.numberOfLines *= *(\(IntNum)) *$")
+        // example: label.textAlignment = .Center
+        static var setTextAlignment = Regex.parse("^ *(\(Id))\\.textAlignment *= *(\\.\(Id)) *$")
         // example: label.textColor = color
         static var setTextColor = Regex.parse("^ *(\(Id))\\.textColor *= *(\(Id)) *$")
         // example: view.backgroundColor = color

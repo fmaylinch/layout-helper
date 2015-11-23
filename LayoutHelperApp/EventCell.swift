@@ -56,7 +56,7 @@ public class EventCell /* : UITableViewCell */ {
             .addConstraints([
                 "H:|[start]|", "H:|[end]|", "H:[sep(20)]",
                 "V:|[start]", "V:[end]|", "V:[sep(1)]",
-                "X:sep.centerX == superview.centerX", "X:sep.centerY == superview.centerY"])
+                "X:sep.centerX == parent.centerX", "X:sep.centerY == parent.centerY"])
             .view
         
         let details = LayoutHelper()
