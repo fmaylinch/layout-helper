@@ -26,13 +26,11 @@ public class ViewUtil {
         return label
     }
 
-    public class func labelWithFont(font: UIFont?, color: UIColor) -> UILabel {
+    public class func labelWithFont(font: UIFont, color: UIColor) -> UILabel {
         
         let label = UILabel()
         label.textColor = color
         // label.adjustsFontSizeToFitFrame = font.pointSize == SizeAuto
-        
-        guard let font = font else { return label }
         
         if font.pointSize == SizeAuto {
             label.font = UIFont(name: font.familyName, size: 20)
@@ -43,15 +41,23 @@ public class ViewUtil {
         return label
     }
     
-    public class func fontMainWithSize(size: Float) -> UIFont? {
-        return UIFont(name: "ShareTech-Regular", size: CGFloat(size))
+    public class func fontMainWithSize(size: Float) -> UIFont {
+        return font("ShareTech-Regular", size: size)
     }
 
-    public class func fontSecondWithSize(size: Float) -> UIFont? {
-        return UIFont(name: "OpenSans-Light", size: CGFloat(size))
+    public class func fontSecondWithSize(size: Float) -> UIFont {
+        return font("OpenSans-Light", size: size)
     }
 
-    public class func fontAwesomeWithSize(size: Float) -> UIFont? {
-        return UIFont(name: "FontAwesome", size: CGFloat(size))
+    public class func fontAwesomeWithSize(size: Float) -> UIFont {
+        return font("FontAwesome", size: size)
+    }
+    
+    private class func font(name: String, size: Float) -> UIFont {
+        if let font = UIFont(name: name, size: CGFloat(size)) {
+            return font
+        } else {
+            fatalError("Could not load font `\(name)`")
+        }
     }
 }

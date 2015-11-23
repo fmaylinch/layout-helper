@@ -77,16 +77,16 @@
 				7C43639E1C000ED400EAF293 /* EventCell.swift */,
 				7C4363861C000A7500EAF293 /* ViewController.swift */,
 				7C4363A91C01445500EAF293 /* CodeController.swift */,
+				7C4363B01C02617F00EAF293 /* layout.swift */,
 				7C4363A71C013E7C00EAF293 /* PreviewController.swift */,
 				7C4363961C000AC400EAF293 /* LayoutHelper.swift */,
 				7C43639C1C000C9500EAF293 /* ViewUtil.swift */,
+				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
 				7C4363881C000A7500EAF293 /* Main.storyboard */,
 				7C43638B1C000A7500EAF293 /* Assets.xcassets */,
 				7C4363841C000A7500EAF293 /* AppDelegate.swift */,
 				7C43638D1C000A7500EAF293 /* LaunchScreen.storyboard */,
 				7C4363901C000A7500EAF293 /* Info.plist */,
-				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
-				7C4363B01C02617F00EAF293 /* layout.swift */,
 			);
 			path = LayoutHelperApp;
 			sourceTree = "<group>";
