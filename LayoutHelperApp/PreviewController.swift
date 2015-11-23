@@ -41,38 +41,38 @@ class PreviewController: UIViewController {
     private func parse(line:String) {
         
         if let result = match(Regex.letView, line) {
-            processLet(line, result)
+            processLet(result)
         } else if let result = match(Regex.letLabel, line) {
-            processLetLabel(line, result)
+            processLetLabel(result)
         } else if let result = match(Regex.letLayout, line) {
-            processLetLayout(line, result)
+            processLetLayout(result)
         } else if let result = match(Regex.letColor, line) {
-            processLetColor(line, result)
+            processLetColor(result)
             
         } else if let result = match(Regex.withRandomColors, line) {
-            processWithRandomColors(line, result)
+            processWithRandomColors(result)
         } else if let result = match(Regex.addViews, line) {
-            processAddViews(line, result)
+            processAddViews(result)
         } else if let result = match(Regex.addConstraints, line) {
-            processAddConstraints(line, result)
+            processAddConstraints(result)
         } else if let result = match(Regex.setWrap, line) {
-            processSetWrap(line, result)
+            processSetWrap(result)
             
         } else if let result = match(Regex.setText, line) {
-            processSetText(line, result)
+            processSetText(result)
         } else if let result = match(Regex.setTextColor, line) {
-            processSetTextColor(line, result)
+            processSetTextColor(result)
         } else if let result = match(Regex.setBackgroundColor, line) {
-            processSetBackgroundColor(line, result)
+            processSetBackgroundColor(result)
             
-        } else if hasMatch(Regex.comment, line) {
+        } else if match(Regex.comment, line) != nil {
             // Ignore comment, or read url
             if let result = match(Regex.url, line) {
-                let url = line.substring(result.rangeAtIndex(1))
+                let url = result.group(1)!
                 parseUrl(url)
             }
             
-        } else if !hasMatch(Regex.empty, line) {
+        } else if match(Regex.empty, line) == nil {
             displayError("Unknown sentence: \(line)")
         }
     }
@@ -126,13 +126,13 @@ class PreviewController: UIViewController {
     }
     
     // Creates a UIView or UILabel
-    private func processLet(line: String, _ result: NSTextCheckingResult) {
+    private func processLet(result: RegexResult) {
     
-        let variable = line.substring(result.rangeAtIndex(1))
-        let clazz = line.substring(result.rangeAtIndex(2))
+        let variable = result.group(1)!
+        let clazz = result.group(2)!
         
         guard !views.keys.contains(variable) else {
-            displayError("There's already a view with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a view with the name `\(variable)`. Line: \(result.str)")
             return
         }
 
@@ -148,14 +148,13 @@ class PreviewController: UIViewController {
     }
 
     // Creates a UILabel usingViewUtil.labelWithSize(s)
-    private func processLetLabel(line: String, _ result: NSTextCheckingResult) {
+    private func processLetLabel(result: RegexResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
-        let sizeStr = line.substring(result.rangeAtIndex(2))
-        let size = (sizeStr as NSString).floatValue
+        let variable = result.group(1)!
+        let size = result.groupAsFloat(2)!
 
         guard !views.keys.contains(variable) else {
-            displayError("There's already a view with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a view with the name `\(variable)`. Line: \(result.str)")
             return
         }
 
@@ -166,13 +165,13 @@ class PreviewController: UIViewController {
     }
 
     // Creates a LayoutHelper
-    private func processLetLayout(line: String, _ result: NSTextCheckingResult) {
+    private func processLetLayout(result: RegexResult) {
         
-        let layoutName = getLayoutName(group(result, line, 1))
-        let viewName = line.substring(result.rangeAtIndex(2))
+        let layoutName = getLayoutName(result.group(1))
+        let viewName = result.group(2)!
         
         guard !layouts.keys.contains(layoutName) else {
-            displayError("There's already a layout with the name `\(layoutName)`. Line: \(line)")
+            displayError("There's already a layout with the name `\(layoutName)`. Line: \(result.str)")
             return
         }
 
@@ -180,25 +179,21 @@ class PreviewController: UIViewController {
             print("Creating layout `\(layoutName)` with view `\(viewName)`")
             layouts[layoutName] = LayoutHelper(view: view)
         } else {
-            displayError("View with name `\(viewName)` not found. Did you create it? Line: \(line)")
+            displayError("View with name `\(viewName)` not found. Did you create it? Line: \(result.str)")
         }
     }
 
     // Creates a UIColor usingViewUtil.color(...)
-    private func processLetColor(line: String, _ result: NSTextCheckingResult) {
+    private func processLetColor(result: RegexResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
-        let redStr = line.substring(result.rangeAtIndex(2))
-        let red = (redStr as NSString).integerValue
-        let greenStr = line.substring(result.rangeAtIndex(3))
-        let green = (greenStr as NSString).integerValue
-        let blueStr = line.substring(result.rangeAtIndex(4))
-        let blue = (blueStr as NSString).integerValue
-        let alphaStr = line.substring(result.rangeAtIndex(5))
-        let alpha = (alphaStr as NSString).floatValue
+        let variable = result.group(1)!
+        let red = result.groupAsInt(2)!
+        let green = result.groupAsInt(3)!
+        let blue = result.groupAsInt(4)!
+        let alpha = result.groupAsFloat(5)!
         
         guard !colors.keys.contains(variable) else {
-            displayError("There's already a color with the name `\(variable)`. Line: \(line)")
+            displayError("There's already a color with the name `\(variable)`. Line: \(result.str)")
             return
         }
         
@@ -209,10 +204,10 @@ class PreviewController: UIViewController {
     }
     
     // Adds wrap constraints to a view
-    private func processWithRandomColors(line: String, _ result: NSTextCheckingResult) {
+    private func processWithRandomColors(result: RegexResult) {
         
-        let layoutName = getLayoutName(group(result, line, 1))
-        let withRandomColors = group(result, line, 2)! == "true"
+        let layoutName = getLayoutName(result.group(1))
+        let withRandomColors = result.group(2)! == "true"
         
         print("\(withRandomColors ? "Enabling" : "Disabling") random colors in layout `\(layoutName)`")
         
@@ -222,10 +217,10 @@ class PreviewController: UIViewController {
     }
     
     // Adds views to a LayoutHelper
-    private func processAddViews(line: String, _ result: NSTextCheckingResult) {
+    private func processAddViews(result: RegexResult) {
         
-        let layoutName = getLayoutName(group(result, line, 1))
-        let keysValues = line.substring(result.rangeAtIndex(2))
+        let layoutName = getLayoutName(result.group(1))
+        let keysValues = result.group(2)!
         
         print("Adding views to layout `\(layoutName)`")
         guard let layout = getLayout(layoutName) else { return }
@@ -236,13 +231,13 @@ class PreviewController: UIViewController {
         {
             if let result = match(Regex.keyValue, keyValue)
             {
-                let key = keyValue.substring(result.rangeAtIndex(1))
-                let viewName = keyValue.substring(result.rangeAtIndex(2))
+                let key = result.group(1)!
+                let viewName = result.group(2)!
                 if let view = views[viewName] {
                     print("- Adding view `\(viewName)` with key \"\(key)\"")
                     viewsMap[key] = view
                 } else {
-                    displayError("There's no view with the name `\(viewName)`. Pair: `\(keyValue)`. Line: \(line)")
+                    displayError("There's no view with the name `\(viewName)`. Pair: `\(keyValue)`. Line: \(result.str)")
                 }
             }
         }
@@ -251,10 +246,10 @@ class PreviewController: UIViewController {
     }
 
     // Adds constraints to a LayoutHelper
-    private func processAddConstraints(line: String, _ result: NSTextCheckingResult) {
+    private func processAddConstraints(result: RegexResult) {
         
-        let layoutName = getLayoutName(group(result, line, 1))
-        let constraints = line.substring(result.rangeAtIndex(2))
+        let layoutName = getLayoutName(result.group(1))
+        let constraints = result.group(2)!
         
         print("Adding views to layout `\(layoutName)`")
         guard let layout = getLayout(layoutName) else { return }
@@ -268,11 +263,11 @@ class PreviewController: UIViewController {
     }
  
     // Adds wrap constraints to a view
-    private func processSetWrap(line: String, _ result: NSTextCheckingResult) {
+    private func processSetWrap(result: RegexResult) {
         
-        let layoutName = getLayoutName(group(result, line, 1))
-        let viewKey = line.substring(result.rangeAtIndex(2))
-        let axisStr = line.substring(result.rangeAtIndex(3))
+        let layoutName = getLayoutName(result.group(1))
+        let viewKey = result.group(2)!
+        let axisStr = result.group(3)!
         
         print("Setting \(axisStr) wrap to view \"\(viewKey)\" in layout `\(layoutName)`")
         
@@ -286,10 +281,10 @@ class PreviewController: UIViewController {
     }
 
     // Sets text to a label
-    private func processSetText(line: String, _ result: NSTextCheckingResult) {
+    private func processSetText(result: RegexResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
-        let text = line.substring(result.rangeAtIndex(2))
+        let variable = result.group(1)!
+        let text = result.group(2)!
         
         print("Setting text `\(text)` to view `\(variable)`")
         guard let label = getLabel(variable) else { return }
@@ -297,10 +292,10 @@ class PreviewController: UIViewController {
     }
 
     // Sets text color to a label
-    private func processSetTextColor(line: String, _ result: NSTextCheckingResult) {
+    private func processSetTextColor(result: RegexResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
-        let colorName = line.substring(result.rangeAtIndex(2))
+        let variable = result.group(1)!
+        let colorName = result.group(2)!
         
         print("Setting text color `\(colorName)` to label `\(variable)`")
         guard let label = getLabel(variable) else { return }
@@ -308,10 +303,10 @@ class PreviewController: UIViewController {
     }
 
     // Sets background color to a view
-    private func processSetBackgroundColor(line: String, _ result: NSTextCheckingResult) {
+    private func processSetBackgroundColor(result: RegexResult) {
         
-        let variable = line.substring(result.rangeAtIndex(1))
-        let colorName = line.substring(result.rangeAtIndex(2))
+        let variable = result.group(1)!
+        let colorName = result.group(2)!
         
         print("Setting background color `\(colorName)` to view `\(variable)`")
         guard let view = getView(variable) else { return }
@@ -373,31 +368,19 @@ class PreviewController: UIViewController {
     
     // Regular expressions
     
-    private func match(regex: NSRegularExpression, _ str: String) -> NSTextCheckingResult? {
+    private func match(regex: NSRegularExpression, _ str: String) -> RegexResult? {
         
         let results = regex.matchesInString(str, options: NSMatchingOptions(), range: NSMakeRange(0, str.characters.count))
+
         if results.count == 1 {
-            return results[0]
-        } else if results.count == 0 {
-            return nil
-        } else {
-            displayError("Unexpected result count \(results.count) for: \(str)")
-            return nil
+            return RegexResult(str: str, result: results[0])
         }
-    }
-    
-    private func hasMatch(regex: NSRegularExpression, _ str: String) -> Bool {
-        return match(regex, str) != nil
-    }
-    
-    private func group(result:NSTextCheckingResult, _ str:String, _ index:Int) -> String? {
         
-        let range = result.rangeAtIndex(index)
-        if range.location != NSNotFound {
-            return str.substring(range)
-        } else {
-            return nil
+        if results.count > 1 {
+            displayError("Unexpected result count \(results.count) for: \(str)")
         }
+        
+        return nil
     }
 
     private class Regex {

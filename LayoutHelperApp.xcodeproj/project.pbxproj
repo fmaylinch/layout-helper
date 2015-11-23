@@ -21,6 +21,7 @@
 		7C4363A81C013E7C00EAF293 /* PreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363A71C013E7C00EAF293 /* PreviewController.swift */; };
 		7C4363AA1C01445500EAF293 /* CodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363A91C01445500EAF293 /* CodeController.swift */; };
 		7C4363AD1C02305000EAF293 /* String+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363AC1C02305000EAF293 /* String+Utils.swift */; };
+		7C4363B31C02A04100EAF293 /* RegexResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363B21C02A04100EAF293 /* RegexResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		7C4363A91C01445500EAF293 /* CodeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeController.swift; sourceTree = "<group>"; };
 		7C4363AC1C02305000EAF293 /* String+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Utils.swift"; sourceTree = "<group>"; };
 		7C4363B01C02617F00EAF293 /* layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = layout.swift; sourceTree = "<group>"; };
+		7C4363B21C02A04100EAF293 /* RegexResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				7C4363841C000A7500EAF293 /* AppDelegate.swift */,
 				7C43638D1C000A7500EAF293 /* LaunchScreen.storyboard */,
 				7C4363901C000A7500EAF293 /* Info.plist */,
+				7C4363B21C02A04100EAF293 /* RegexResult.swift */,
 			);
 			path = LayoutHelperApp;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				7C43639F1C000ED400EAF293 /* EventCell.swift in Sources */,
 				7C43639D1C000C9500EAF293 /* ViewUtil.swift in Sources */,
 				7C4363851C000A7500EAF293 /* AppDelegate.swift in Sources */,
+				7C4363B31C02A04100EAF293 /* RegexResult.swift in Sources */,
 				7C4363AA1C01445500EAF293 /* CodeController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
