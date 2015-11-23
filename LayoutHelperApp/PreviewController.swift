@@ -38,45 +38,39 @@ class PreviewController: UIViewController {
         }
     }
     
+    // It's strange but we need to use `PreviewController` first (probably to send the `self`)
+    // See below wen calling `function(self)(result)`
+    private let regexToFuncs : [NSRegularExpression : PreviewController -> RegexResult -> Void] = [
+        
+        Regex.letView : processLet,
+        Regex.letLabel : processLetLabel,
+        Regex.letLayout : processLetLayout,
+        Regex.letColor : processLetColor,
+        
+        Regex.withRandomColors : processWithRandomColors,
+        Regex.addViews : processAddViews,
+        Regex.addConstraints : processAddConstraints,
+        Regex.setWrap : processSetWrap,
+        
+        Regex.setText : processSetText,
+        Regex.setNumberOfLines : processSetNumberOfLines,
+        Regex.setTextAlignment : processSetTextAlignment,
+        Regex.setTextColor : processSetTextColor,
+        Regex.setBackgroundColor : processSetBackgroundColor,
+
+        Regex.comment : processCom
+    ]
+    
     private func parse(line:String) {
         
-        if let result = match(Regex.letView, line) {
-            processLet(result)
-        } else if let result = match(Regex.letLabel, line) {
-            processLetLabel(result)
-        } else if let result = match(Regex.letLayout, line) {
-            processLetLayout(result)
-        } else if let result = match(Regex.letColor, line) {
-            processLetColor(result)
-            
-        } else if let result = match(Regex.withRandomColors, line) {
-            processWithRandomColors(result)
-        } else if let result = match(Regex.addViews, line) {
-            processAddViews(result)
-        } else if let result = match(Regex.addConstraints, line) {
-            processAddConstraints(result)
-        } else if let result = match(Regex.setWrap, line) {
-            processSetWrap(result)
-            
-        } else if let result = match(Regex.setText, line) {
-            processSetText(result)
-        } else if let result = match(Regex.setNumberOfLines, line) {
-            processSetNumberOfLines(result)
-        } else if let result = match(Regex.setTextAlignment, line) {
-            processSetTextAlignment(result)
-        } else if let result = match(Regex.setTextColor, line) {
-            processSetTextColor(result)
-        } else if let result = match(Regex.setBackgroundColor, line) {
-            processSetBackgroundColor(result)
-            
-        } else if match(Regex.comment, line) != nil {
-            // Ignore comment, or read url
-            if let result = match(Regex.url, line) {
-                let url = result.group(1)!
-                parseUrl(url)
+        for (regex, function) in regexToFuncs {
+            if let result = match(regex, line) {
+                function(self)(result) // here we pass `self` to get the function
+                return
             }
-            
-        } else if match(Regex.empty, line) == nil {
+        }
+        
+        if match(Regex.empty, line) == nil {
             displayError("Unknown sentence: \(line)")
         }
     }
@@ -129,8 +123,17 @@ class PreviewController: UIViewController {
         return ai
     }
     
+    // Ignores comment, or reads url if comment has a http url
+    private func processCom(result: RegexResult) {
+        
+        if let result = match(Regex.url, result.str) {
+            let url = result.group(1)!
+            parseUrl(url)
+        }
+    }
+
     // Creates a UIView or UILabel
-    private func processLet(result: RegexResult) {
+    func processLet(result: RegexResult) {
     
         let variable = result.group(1)!
         let clazz = result.group(2)!
@@ -299,11 +302,11 @@ class PreviewController: UIViewController {
     private func processSetNumberOfLines(result: RegexResult) {
         
         let variable = result.group(1)!
-        let number = result.groupAsInt(2)!
+        let numberOfLines = result.groupAsInt(2)!
         
-        print("Setting `\(number)` number of lines to label `\(variable)`")
+        print("Setting `\(numberOfLines)` number of lines to label `\(variable)`")
         guard let label = getLabel(variable) else { return }
-        label.numberOfLines = number
+        label.numberOfLines = numberOfLines
     }
  
     // Sets alignment to a label
