@@ -2,16 +2,10 @@
 /**
  * Controller to preview the layout
  *
- * TODO: allow preview view resizing
- * http://stackoverflow.com/questions/16819396/drag-separator-to-resize-uiviews
- * https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIPanGestureRecognizer_Class/
- *
- * TODO: more properties like:
+ * TODO: support other sets like
  *
  * label.layer.borderColor = UIColor.whiteColor().CGColor
- * label.layer.borderWidth = 1
- * label.layer.cornerRadius = 7
- * label.layer.masksToBounds = true
+ * label.textAlignment = .Center
  */
 
 import UIKit
@@ -38,7 +32,8 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     var mainLayout : LayoutHelper!
     
     // keep the objects created in the code
-    private var objects = [String:AnyObject]()
+    private var objects = NSMutableDictionary() // We use this class to interact with objc class ReflectionHelper
+    private var reflectionHelper : ReflectionHelper!
 
     // Last variable declared with let, to allow chaining
     private var previousVariable : String?
@@ -46,20 +41,25 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     // Dirty way of avoiding throws
     private var foundError = false
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        reflectionHelper = ReflectionHelper(objects: objects)
         mainLayout = LayoutHelper(view: mainView)
         setupDragView()
         resetView()
     }
+    
+    
+    // --- Dragging to resize container view ---
     
     /** When dragView is dragged, the container view will be resized through the constraints */
     private func setupDragView()
     {
         storeCurrentConstraintConstants()
         
-        dragLabel.text = "\u{f0b2}"
+        dragLabel.text = "\u{f0b2}" // fa-arrows-alt
         dragLabel.font = ViewUtil.fontAwesomeWithSize(30)
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: Selector("drag:"))
@@ -99,7 +99,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     
     private func resetView() {
         
-        objects.removeAll()
+        objects.removeAllObjects()
         
         for view in mainView.subviews {
             view.removeFromSuperview()
@@ -127,25 +127,29 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     
     // It's strange but we need to use `PreviewController` first (probably to send the `self`)
     // See below wen calling `function(self)(result)`
-    private let regexToFuncs : [NSRegularExpression : PreviewController -> RegexResult -> Void] = [
+    private let regexToFuncs : [(NSRegularExpression, PreviewController -> RegexResult -> Void)] = [
         
-        Regex.letView : processLet,
-        Regex.letLabel : processLetLabel,
-        Regex.letLayout : processLetLayout,
-        Regex.letColor : processLetColor,
+        (Regex.letView, processLet),
+        (Regex.letLabel, processLetLabel),
+        (Regex.letLayout, processLetLayout),
+        (Regex.letColor, processLetColor),
         
-        Regex.withRandomColors : processWithRandomColors,
-        Regex.addViews : processAddViews,
-        Regex.addConstraints : processAddConstraints,
-        Regex.setWrap : processSetWrap,
-        
-        Regex.setText : processSetText,
-        Regex.setNumberOfLines : processSetNumberOfLines,
-        Regex.setTextAlignment : processSetTextAlignment,
-        Regex.setTextColor : processSetTextColor,
-        Regex.setBackgroundColor : processSetBackgroundColor,
+        (Regex.withRandomColors, processWithRandomColors),
+        (Regex.addViews, processAddViews),
+        (Regex.addConstraints, processAddConstraints),
+        (Regex.setWrap, processSetWrap),
 
-        Regex.comment : processComment
+        (Regex.setTextAlignment, processSetTextAlignment),
+        (Regex.genericSetProperty, processGenericSetProperty),
+
+        /*
+        (Regex.setText, processSetText),
+        (Regex.setNumberOfLines, processSetNumberOfLines),
+        (Regex.setTextColor, processSetTextColor),
+        (Regex.setBackgroundColor, processSetBackgroundColor)
+        */
+
+        (Regex.comment, processComment)
     ]
     
     private func parse(line:String) {
@@ -289,7 +293,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         
         previousVariable = variable // keep last let variable
         
-        if objects.keys.contains(variable) {
+        if objects[variable] != nil {
             displayError("There's already a variable with the name `\(variable)`.")
             return false
         } else {
@@ -373,6 +377,17 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         layout.setWrapContent(viewKey, axis: axis)
     }
 
+    // Sets a property of an object (only simple, non-chained values supported, and no enumerations)
+    private func processGenericSetProperty(result: RegexResult) {
+        
+        let target = result.group(1)!
+        let value = result.group(2)!
+        
+        print("Setting `\(target)` = `\(value)` via reflection")
+        
+        reflectionHelper.performAssignment(target, value: value)
+    }
+
     // Sets text to a label
     private func processSetText(result: RegexResult) {
         
@@ -382,7 +397,10 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         
         print("Setting text `\(text)` to view `\(variable)`")
         guard let label = getLabel(variable) else { return }
-        label.text = text
+
+        // TODO: try reflection
+        // label.text = text
+        ReflectionHelper.setProperty("text", value: text, target: label);
     }
 
     // Sets numberOfLines to a label
@@ -512,11 +530,13 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     private class Regex {
         
         // identifier pattern (variable, method, class, etc.)
-        static let Id: String = "[_a-zA-Z][_a-zA-Z0-9]+"
+        static let Id: String = "[_a-zA-Z][_a-zA-Z0-9]*"
         // float number pattern e.g. "12", "12.", "2.56"
         static let FloatNum: String = "\\d+\\.?\\d*"
         // integer number pattern e.g. "1", "75", "200"
         static let IntNum: String = "0|[1-9]\\d*"
+        // chain of variable and properties like "label.layer.borderWidth"
+        static let Chain: String = "[_a-zA-Z][_a-zA-Z0-9.]*"
 
         // example: let v1 = UIView()
         static let letView = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
@@ -537,7 +557,9 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         static var addConstraints = Regex.parse("^ *(\(Id))?\\.addConstraints\\(\\[(.+)\\]\\) *$")
         // example: lay.setWrapContent("t2", axis: .Horizontal)
         static var setWrap = Regex.parse("^ *(\(Id))?\\.setWrapContent\\(\"(\(Id))\", *axis: *((\\.Horizontal)|(\\.Vertical))\\) *$")
-        
+
+        static var genericSetProperty = Regex.parse("^ *(\(Chain)) *= *(.*) *$")
+
         // example: label.text = "hello"
         static var setText = Regex.parse("^ *(\(Id))\\.text *= *\"(.*)\" *$")
         // example: label.numberOfLines = 2
