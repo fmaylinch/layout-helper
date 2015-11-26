@@ -2,6 +2,10 @@
 /**
  * Controller to preview the layout
  *
+ * TODO: allow preview view resizing (add dragging point, don't remove on resetView(), or recreate it)
+ * http://stackoverflow.com/questions/16819396/drag-separator-to-resize-uiviews
+ * https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIPanGestureRecognizer_Class/
+ *
  * TODO: more properties like:
  *
  * label.layer.borderColor = UIColor.whiteColor().CGColor
@@ -23,9 +27,7 @@ class PreviewController: UIViewController {
     var mainLayout : LayoutHelper!
     
     // keep the objects created in the code
-    private var layouts = [String:LayoutHelper]()
-    private var views = [String:UIView]()
-    private var colors = [String:UIColor]()
+    private var objects = [String:AnyObject]()
     
     // Dirty way of avoiding throws
     private var foundError = false
@@ -44,16 +46,14 @@ class PreviewController: UIViewController {
     
     private func resetView() {
         
-        layouts.removeAll()
-        views.removeAll()
-        colors.removeAll()
+        objects.removeAll()
         
         for view in preview.subviews {
             view.removeFromSuperview()
         }
         
-        layouts[MainLayoutName] = mainLayout
-        views[MainViewName] = mainLayout.view
+        objects[MainLayoutName] = mainLayout
+        objects[MainViewName] = mainLayout.view
         
         // hardcodedTest()
         parseText(code)
@@ -172,53 +172,44 @@ class PreviewController: UIViewController {
         let variable = result.group(1)!
         let clazz = result.group(2)!
         
-        guard !views.keys.contains(variable) else {
-            displayError("There's already a view with the name `\(variable)`. Line: \(result.str)")
-            return
-        }
-
+        guard variableDoesNotExist(variable) else { return }
+        
         if clazz == "UIView" {
             print("Creating view `\(variable)`")
-            views[variable] = UIView()
+            objects[variable] = UIView()
         } else if clazz == "UILabel" {
             print("Creating label `\(variable)`")
-            views[variable] = UILabel()
+            objects[variable] = UILabel()
         } else {
             displayError("Unsupported class \(clazz)")
         }
     }
-
+    
     // Creates a UILabel usingViewUtil.labelWithSize(s)
     private func processLetLabel(result: RegexResult) {
         
         let variable = result.group(1)!
         let size = result.groupAsFloat(2)!
 
-        guard !views.keys.contains(variable) else {
-            displayError("There's already a view with the name `\(variable)`. Line: \(result.str)")
-            return
-        }
+        guard variableDoesNotExist(variable) else { return }
 
         print("Creating label `\(variable)` with size `\(size)`")
         let label = ViewUtil.labelWithSize(size)
         
-        views[variable] = label
+        objects[variable] = label
     }
 
     // Creates a LayoutHelper
     private func processLetLayout(result: RegexResult) {
         
-        let layoutName = getLayoutName(result.group(1))
+        let variable = getLayoutName(result.group(1))
         let viewName = result.group(2)!
         
-        guard !layouts.keys.contains(layoutName) else {
-            displayError("There's already a layout with the name `\(layoutName)`. Line: \(result.str)")
-            return
-        }
+        guard variableDoesNotExist(variable) else { return }
 
-        if let view = views[viewName] {
-            print("Creating layout `\(layoutName)` with view `\(viewName)`")
-            layouts[layoutName] = LayoutHelper(view: view)
+        if let view = getView(viewName) {
+            print("Creating layout `\(variable)` with view `\(viewName)`")
+            objects[variable] = LayoutHelper(view: view)
         } else {
             displayError("View with name `\(viewName)` not found. Did you create it? Line: \(result.str)")
         }
@@ -233,15 +224,22 @@ class PreviewController: UIViewController {
         let blue = result.groupAsInt(4)!
         let alpha = result.groupAsFloat(5)!
         
-        guard !colors.keys.contains(variable) else {
-            displayError("There's already a color with the name `\(variable)`. Line: \(result.str)")
-            return
-        }
+        guard variableDoesNotExist(variable) else { return }
         
         print("Creating color `\(variable)` with rgb(\(red),\(green),\(blue)) and alpha \(alpha)")
         let color = ViewUtil.color(red: red, green: green, blue: blue, alpha: alpha)
         
-        colors[variable] = color
+        objects[variable] = color
+    }
+    
+    private func variableDoesNotExist(variable: String) -> Bool {
+        
+        if objects.keys.contains(variable) {
+            displayError("There's already a variable with the name `\(variable)`.")
+            return false
+        } else {
+            return true
+        }
     }
     
     // Adds wrap constraints to a view
@@ -274,7 +272,7 @@ class PreviewController: UIViewController {
             {
                 let key = result.group(1)!
                 let viewName = result.group(2)!
-                if let view = views[viewName] {
+                if let view = getView(viewName) {
                     print("- Adding view `\(viewName)` with key \"\(key)\"")
                     viewsMap[key] = view
                 } else {
@@ -399,19 +397,13 @@ class PreviewController: UIViewController {
     }
 
     private func getView(name: String) -> UIView? {
-        guard let view = views[name] else {
-            displayError("There's no view with the name `\(name)`")
-            return nil
-        }
-        return view
+        
+        return getObject(name, clazz: UIView.self)
     }
 
     private func getColor(name: String) -> UIColor? {
-        guard let color = colors[name] else {
-            displayError("There's no color with the name `\(name)`")
-            return nil
-        }
-        return color
+        
+        return getObject(name, clazz: UIColor.self)
     }
 
     private var previousLayoutName : String?
@@ -431,14 +423,24 @@ class PreviewController: UIViewController {
     
     private func getLayout(name: String) -> LayoutHelper? {
         
-        guard let layout = layouts[name] else {
-            displayError("There's no layout with the name `\(name)`")
+        return getObject(name, clazz: LayoutHelper.self)
+    }
+
+    private func getObject<T:AnyObject>(name: String, clazz: T.Type) -> T?
+    {
+        guard let object = objects[name] else {
+            displayError("There's no object with the name `\(name)`")
             return nil
         }
         
-        return layout
+        guard let typedObject = object as? T else {
+            displayError("Object with name `\(name)` is not of type \(clazz), it is a \(object.dynamicType)")
+            return nil
+        }
+        
+        return typedObject
     }
-
+    
     
     // Regular expressions
     

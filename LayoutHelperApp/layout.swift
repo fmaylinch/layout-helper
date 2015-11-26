@@ -1,6 +1,6 @@
 
 // This file is ignored in the project.
-// Load this file in the CodeController, either directly or via url.
+// Load the contents of this file in the CodeController, either directly or via url.
 
 let mainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
 let whiteColor = ViewUtil.color(red: 255, green: 255, blue: 255, alpha: 1)
