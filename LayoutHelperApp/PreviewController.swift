@@ -28,7 +28,10 @@ class PreviewController: UIViewController {
     
     // keep the objects created in the code
     private var objects = [String:AnyObject]()
-    
+
+    // Last variable declared with let, to allow chaining
+    private var previousVariable : String?
+
     // Dirty way of avoiding throws
     private var foundError = false
     
@@ -172,7 +175,7 @@ class PreviewController: UIViewController {
         let variable = result.group(1)!
         let clazz = result.group(2)!
         
-        guard variableDoesNotExist(variable) else { return }
+        guard letVarAvailable(variable) else { return }
         
         if clazz == "UIView" {
             print("Creating view `\(variable)`")
@@ -191,7 +194,7 @@ class PreviewController: UIViewController {
         let variable = result.group(1)!
         let size = result.groupAsFloat(2)!
 
-        guard variableDoesNotExist(variable) else { return }
+        guard letVarAvailable(variable) else { return }
 
         print("Creating label `\(variable)` with size `\(size)`")
         let label = ViewUtil.labelWithSize(size)
@@ -202,10 +205,10 @@ class PreviewController: UIViewController {
     // Creates a LayoutHelper
     private func processLetLayout(result: RegexResult) {
         
-        let variable = getLayoutName(result.group(1))
+        let variable = result.group(1)!
         let viewName = result.group(2)!
         
-        guard variableDoesNotExist(variable) else { return }
+        guard letVarAvailable(variable) else { return }
 
         if let view = getView(viewName) {
             print("Creating layout `\(variable)` with view `\(viewName)`")
@@ -224,15 +227,17 @@ class PreviewController: UIViewController {
         let blue = result.groupAsInt(4)!
         let alpha = result.groupAsFloat(5)!
         
-        guard variableDoesNotExist(variable) else { return }
-        
+        guard letVarAvailable(variable) else { return }
+
         print("Creating color `\(variable)` with rgb(\(red),\(green),\(blue)) and alpha \(alpha)")
         let color = ViewUtil.color(red: red, green: green, blue: blue, alpha: alpha)
         
         objects[variable] = color
     }
     
-    private func variableDoesNotExist(variable: String) -> Bool {
+    private func letVarAvailable(variable: String) -> Bool {
+        
+        previousVariable = variable // keep last let variable
         
         if objects.keys.contains(variable) {
             displayError("There's already a variable with the name `\(variable)`.")
@@ -245,7 +250,7 @@ class PreviewController: UIViewController {
     // Adds wrap constraints to a view
     private func processWithRandomColors(result: RegexResult) {
         
-        let layoutName = getLayoutName(result.group(1))
+        let layoutName = getVariableName(result.group(1))
         let withRandomColors = result.group(2)! == "true"
         
         print("\(withRandomColors ? "Enabling" : "Disabling") random colors in layout `\(layoutName)`")
@@ -258,7 +263,7 @@ class PreviewController: UIViewController {
     // Adds views to a LayoutHelper
     private func processAddViews(result: RegexResult) {
         
-        let layoutName = getLayoutName(result.group(1))
+        let layoutName = getVariableName(result.group(1))
         let keysValues = result.group(2)!
         
         print("Adding views to layout `\(layoutName)`")
@@ -287,7 +292,7 @@ class PreviewController: UIViewController {
     // Adds constraints to a LayoutHelper
     private func processAddConstraints(result: RegexResult) {
         
-        let layoutName = getLayoutName(result.group(1))
+        let layoutName = getVariableName(result.group(1))
         let constraints = result.group(2)!
         
         print("Adding views to layout `\(layoutName)`")
@@ -304,7 +309,7 @@ class PreviewController: UIViewController {
     // Adds wrap constraints to a view
     private func processSetWrap(result: RegexResult) {
         
-        let layoutName = getLayoutName(result.group(1))
+        let layoutName = getVariableName(result.group(1))
         let viewKey = result.group(2)!
         let axisStr = result.group(3)!
         
@@ -405,18 +410,13 @@ class PreviewController: UIViewController {
         
         return getObject(name, clazz: UIColor.self)
     }
-
-    private var previousLayoutName : String?
     
-    private func getLayoutName(name: String?) -> String {
+    private func getVariableName(name: String?) -> String {
 
-        guard let resolvedName = name ?? previousLayoutName else {
-            displayError("Unexpected chained expression, can't tell the layout you want to access")
+        guard let resolvedName = name ?? previousVariable else {
+            displayError("Unexpected chained expression, can't tell the object you want to access")
             return "(unknown)"
         }
-
-        // TODO: we will actually allow misplaced chaining
-        previousLayoutName = resolvedName
 
         return resolvedName
     }
