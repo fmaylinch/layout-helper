@@ -194,21 +194,55 @@
                         <viewControllerLayoutGuide type="top" id="Ywf-eV-8tf"/>
                         <viewControllerLayoutGuide type="bottom" id="kj2-hp-Ofd"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="K1O-a1-SST">
+                    <view key="view" autoresizesSubviews="NO" contentMode="scaleToFill" id="K1O-a1-SST">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxu-0a-ebN">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O6I-0n-jHi" userLabel="Container">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxu-0a-ebN" userLabel="mainView">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <view alpha="0.5" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yWd-Pb-wJs" userLabel="DragView">
+                                        <rect key="frame" x="538" y="499" width="62" height="37"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="DRAG" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oTi-7r-3tX">
+                                                <rect key="frame" x="8" y="8" width="46" height="21"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                <nil key="highlightedColor"/>
+                                                <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                                <size key="shadowOffset" width="1" height="1"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="oTi-7r-3tX" firstAttribute="leading" secondItem="yWd-Pb-wJs" secondAttribute="leadingMargin" id="0kQ-zE-heC"/>
+                                            <constraint firstItem="oTi-7r-3tX" firstAttribute="bottom" secondItem="yWd-Pb-wJs" secondAttribute="bottomMargin" id="Z4t-bP-tdW"/>
+                                            <constraint firstItem="oTi-7r-3tX" firstAttribute="top" secondItem="yWd-Pb-wJs" secondAttribute="topMargin" id="oAn-BV-cmT"/>
+                                            <constraint firstItem="oTi-7r-3tX" firstAttribute="trailing" secondItem="yWd-Pb-wJs" secondAttribute="trailingMargin" id="zbO-fS-Fne"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="0.1211523945" green="0.61540421199999995" blue="0.24471534889999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="nxu-0a-ebN" firstAttribute="trailing" secondItem="O6I-0n-jHi" secondAttribute="trailing" id="HKR-Wt-vOg"/>
+                                    <constraint firstAttribute="bottom" secondItem="yWd-Pb-wJs" secondAttribute="bottom" id="Jdi-Rl-IKZ"/>
+                                    <constraint firstAttribute="trailing" secondItem="yWd-Pb-wJs" secondAttribute="trailing" id="OhB-N6-7mK"/>
+                                    <constraint firstItem="nxu-0a-ebN" firstAttribute="leading" secondItem="O6I-0n-jHi" secondAttribute="leading" id="VLa-dg-Fc1"/>
+                                    <constraint firstItem="nxu-0a-ebN" firstAttribute="top" secondItem="O6I-0n-jHi" secondAttribute="top" id="kNP-X8-za5"/>
+                                    <constraint firstItem="nxu-0a-ebN" firstAttribute="bottom" secondItem="O6I-0n-jHi" secondAttribute="bottom" id="tkV-ar-3UQ"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="nxu-0a-ebN" firstAttribute="leading" secondItem="K1O-a1-SST" secondAttribute="leading" id="HIi-6F-3em"/>
-                            <constraint firstAttribute="trailing" secondItem="nxu-0a-ebN" secondAttribute="trailing" id="Rxm-ZH-dJc"/>
-                            <constraint firstItem="nxu-0a-ebN" firstAttribute="bottom" secondItem="kj2-hp-Ofd" secondAttribute="top" id="Y76-eV-mCq"/>
-                            <constraint firstItem="nxu-0a-ebN" firstAttribute="top" secondItem="Ywf-eV-8tf" secondAttribute="bottom" id="eB8-5O-ykO"/>
+                            <constraint firstItem="O6I-0n-jHi" firstAttribute="leading" secondItem="K1O-a1-SST" secondAttribute="leading" id="Jp8-eH-7sO"/>
+                            <constraint firstItem="O6I-0n-jHi" firstAttribute="top" secondItem="Ywf-eV-8tf" secondAttribute="bottom" id="vyw-Pm-viF"/>
+                            <constraint firstItem="O6I-0n-jHi" firstAttribute="trailing" secondItem="K1O-a1-SST" secondAttribute="trailing" id="wnN-u2-HP3" userLabel="Container Trailing"/>
+                            <constraint firstItem="O6I-0n-jHi" firstAttribute="bottom" secondItem="kj2-hp-Ofd" secondAttribute="top" id="xaz-b9-eqy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Layout" id="Dkh-13-jVj">
@@ -219,7 +253,11 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="preview" destination="nxu-0a-ebN" id="MHJ-b3-5CL"/>
+                        <outlet property="containerBottom" destination="xaz-b9-eqy" id="eCl-Kx-vo2"/>
+                        <outlet property="containerTrailing" destination="wnN-u2-HP3" id="qOz-NV-aD4"/>
+                        <outlet property="dragLabel" destination="oTi-7r-3tX" id="9fh-my-8Vx"/>
+                        <outlet property="dragView" destination="yWd-Pb-wJs" id="YC0-Vs-fW0"/>
+                        <outlet property="mainView" destination="nxu-0a-ebN" id="rHk-9g-wUX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zh2-Sf-jDa" userLabel="First Responder" sceneMemberID="firstResponder"/>

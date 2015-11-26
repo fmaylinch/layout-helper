@@ -2,7 +2,7 @@
 /**
  * Controller to preview the layout
  *
- * TODO: allow preview view resizing (add dragging point, don't remove on resetView(), or recreate it)
+ * TODO: allow preview view resizing
  * http://stackoverflow.com/questions/16819396/drag-separator-to-resize-uiviews
  * https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIPanGestureRecognizer_Class/
  *
@@ -16,12 +16,23 @@
 
 import UIKit
 
-class PreviewController: UIViewController {
+class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     
-    let MainLayoutName = "main"
+    let MainLayoutName = "mainLayout"
     let MainViewName = "mainView"
 
-    @IBOutlet weak var preview: UIView!
+    // This is where views can be added in the code
+    @IBOutlet weak var mainView: UIView!
+    
+    // Constraints for the container view, so they can be changed using dragView
+
+    @IBOutlet weak var containerTrailing: NSLayoutConstraint!
+    @IBOutlet weak var containerBottom: NSLayoutConstraint!
+    @IBOutlet weak var dragView: UIView!
+    @IBOutlet weak var dragLabel: UILabel!
+    private var currentX: CGFloat = 0
+    private var currentY: CGFloat = 0
+    
     var code : String!
     
     var mainLayout : LayoutHelper!
@@ -38,8 +49,47 @@ class PreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        mainLayout = LayoutHelper(view: preview)
+        mainLayout = LayoutHelper(view: mainView)
+        setupDragView()
         resetView()
+    }
+    
+    /** When dragView is dragged, the container view will be resized through the constraints */
+    private func setupDragView()
+    {
+        storeCurrentConstraintConstants()
+        
+        dragLabel.text = "\u{f0b2}"
+        dragLabel.font = ViewUtil.fontAwesomeWithSize(30)
+        
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: Selector("drag:"))
+        panRecognizer.minimumNumberOfTouches = 1
+        panRecognizer.maximumNumberOfTouches = 1
+        panRecognizer.delegate = self
+        dragView.addGestureRecognizer(panRecognizer)
+    }
+    
+    func drag(panRecognizer: UIPanGestureRecognizer) {
+        
+        let point = panRecognizer.translationInView(dragView)
+        
+        let x = min(currentX + point.x, 0)
+        let y = min(currentY + point.y, 0)
+        
+        containerTrailing.constant = x
+        containerBottom.constant = y
+        
+        self.view.setNeedsUpdateConstraints()
+        
+        if panRecognizer.state == .Ended {
+            storeCurrentConstraintConstants()
+        }
+    }
+    
+    func storeCurrentConstraintConstants() {
+        currentX = containerTrailing.constant
+        currentY = containerBottom.constant
+        print("Current margins: {\(currentX), \(currentY)}")
     }
     
     @IBAction func reloadCode(sender: AnyObject) {
@@ -51,7 +101,7 @@ class PreviewController: UIViewController {
         
         objects.removeAll()
         
-        for view in preview.subviews {
+        for view in mainView.subviews {
             view.removeFromSuperview()
         }
         
@@ -151,11 +201,11 @@ class PreviewController: UIViewController {
         
         let ai = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
         ai.startAnimating()
-        let main = getLayout("main")!
-        main.addView(ai, key: "ai")
-        main.addConstraints([
-            "X:ai.centerX == parent.centerX",
-            "X:ai.centerY == parent.centerY"])
+        mainLayout
+            .addView(ai, key: "ai")
+            .addConstraints([
+                "X:ai.centerX == parent.centerX",
+                "X:ai.centerY == parent.centerY"])
         
         return ai
     }
@@ -229,7 +279,7 @@ class PreviewController: UIViewController {
         
         guard letVarAvailable(variable) else { return }
 
-        print("Creating color `\(variable)` with rgb(\(red),\(green),\(blue)) and alpha \(alpha)")
+        print("Creating color `\(variable)` with rgba(\(red), \(green), \(blue), \(alpha)")
         let color = ViewUtil.color(red: red, green: green, blue: blue, alpha: alpha)
         
         objects[variable] = color

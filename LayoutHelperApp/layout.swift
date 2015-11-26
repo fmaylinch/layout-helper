@@ -40,5 +40,5 @@ let lay = LayoutHelper(view: container)
     .setWrapContent("inc", axis: .Horizontal)
 
 mainView.backgroundColor = blackColor
-main.addViews(["container": container])
-main.addConstraints(["H:|[container]|", "V:|-[container(60)]"])
+mainLayout.addViews(["container": container])
+mainLayout.addConstraints(["H:|[container]|", "V:|-[container(60)]"])
