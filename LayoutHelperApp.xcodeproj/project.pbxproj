@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7C1E27731C07BC6800C848E5 /* ReflectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */; };
+		7C1E27791C0893B800C848E5 /* CustomLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E27781C0893B800C848E5 /* CustomLabel.swift */; };
 		7C4363851C000A7500EAF293 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363841C000A7500EAF293 /* AppDelegate.swift */; };
 		7C4363871C000A7500EAF293 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363861C000A7500EAF293 /* ViewController.swift */; };
 		7C43638A1C000A7500EAF293 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C4363881C000A7500EAF293 /* Main.storyboard */; };
@@ -28,6 +29,7 @@
 		7C1E27701C07BC6700C848E5 /* LayoutHelperApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LayoutHelperApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		7C1E27711C07BC6800C848E5 /* ReflectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReflectionHelper.h; sourceTree = "<group>"; };
 		7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReflectionHelper.m; sourceTree = "<group>"; };
+		7C1E27781C0893B800C848E5 /* CustomLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomLabel.swift; sourceTree = "<group>"; };
 		7C4363811C000A7500EAF293 /* LayoutHelperApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayoutHelperApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C4363841C000A7500EAF293 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7C4363861C000A7500EAF293 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 			children = (
 				7C4363961C000AC400EAF293 /* LayoutHelper.swift */,
 				7C43639C1C000C9500EAF293 /* ViewUtil.swift */,
+				7C1E27781C0893B800C848E5 /* CustomLabel.swift */,
 				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
 				7C4363B21C02A04100EAF293 /* RegexResult.swift */,
 				7C1E27711C07BC6800C848E5 /* ReflectionHelper.h */,
@@ -207,6 +210,7 @@
 				7C4363851C000A7500EAF293 /* AppDelegate.swift in Sources */,
 				7C4363B31C02A04100EAF293 /* RegexResult.swift in Sources */,
 				7C4363AA1C01445500EAF293 /* CodeController.swift in Sources */,
+				7C1E27791C0893B800C848E5 /* CustomLabel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

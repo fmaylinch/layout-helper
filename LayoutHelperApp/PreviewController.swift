@@ -46,9 +46,43 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         
         reflectionHelper = ReflectionHelper(objects: objects)
-        mainLayout = LayoutHelper(view: mainView)
         setupDragView()
         resetView()
+    }
+    
+    @IBAction func reloadCode(sender: AnyObject) {
+        print("Reset view")
+        resetView()
+    }
+    
+    private func resetView() {
+        
+        objects.removeAllObjects()
+        
+        for view in mainView.subviews {
+            view.removeFromSuperview()
+        }
+        
+        mainLayout = LayoutHelper(view: mainView)
+
+        objects[MainLayoutName] = mainLayout
+        objects[MainViewName] = mainLayout.view
+        
+        // hardcodedTest()
+        parseText(code)
+    }
+    
+    private func parseText(text: String) {
+        
+        let lines = text.split("\n")
+        
+        for line in lines {
+            
+            guard !foundError else { return }
+            
+            // print("  >> \(line)")
+            parse(line)
+        }
     }
     
     
@@ -91,39 +125,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         currentY = containerBottom.constant
         print("Current margins: {\(currentX), \(currentY)}")
     }
-    
-    @IBAction func reloadCode(sender: AnyObject) {
-        print("Reset view")
-        resetView()
-    }
-    
-    private func resetView() {
-        
-        objects.removeAllObjects()
-        
-        for view in mainView.subviews {
-            view.removeFromSuperview()
-        }
-        
-        objects[MainLayoutName] = mainLayout
-        objects[MainViewName] = mainLayout.view
-        
-        // hardcodedTest()
-        parseText(code)
-    }
-    
-    private func parseText(text: String) {
-        
-        let lines = text.split("\n")
-        
-        for line in lines {
-            
-            guard !foundError else { return }
-            
-            print("  >> \(line)")
-            parse(line)
-        }
-    }
+
     
     // It's strange but we need to use `PreviewController` first (probably to send the `self`)
     // See below wen calling `function(self)(result)`
@@ -199,7 +201,8 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         
         let ai = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
         ai.startAnimating()
-        mainLayout
+        
+        LayoutHelper.init(view: self.view)
             .addView(ai, key: "ai")
             .addConstraints([
                 "X:ai.centerX == parent.centerX",

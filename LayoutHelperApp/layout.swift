@@ -9,41 +9,21 @@ let blackColor = ViewUtil.color(red: 0, green: 0, blue: 0, alpha: 1)
 let container = UIView()
 container.backgroundColor = whiteColor
 
-let includedView = UIView()
-includedView.backgroundColor = mainColor
+let label = ViewUtil.labelWithSize(0)
+label.text = "Some text"
+label.textColor = whiteColor
+label.textAlignment = .Center
+label.backgroundColor = blackColor
+//label.layer.cornerRadius = 10
+//label.layer.masksToBounds = true
+label.layer.borderWidth = 30
+label.layer.borderColor = mainColor.CGColor
 
-let check = ViewUtil.labelWithSize(18)
-check.text = "V"
-check.textColor = whiteColor
-check.textAlignment = .Center
-check.backgroundColor = blackColor
-check.layer.cornerRadius = 10
-check.layer.borderWidth = 2
-check.layer.masksToBounds = true
-check.layer.borderColor = whiteColor.CGColor
-
-let club = ViewUtil.labelWithSize(11)
-club.text = "CLUB\nPREMIUM"
-club.textColor = whiteColor
-club.textAlignment = .Center
-club.numberOfLines = 0
-
-let incLay = LayoutHelper(view:includedView)
+let lay = LayoutHelper(view:container)
     .withRandomColors(false)
-    .addViews(["check":check, "club":club])
-    .addConstraints(["H:|-[check]-|", "H:|-[club]-|"])
-    .addConstraints(["V:|-(5)-[check][club]-(5)-|"])
-    .setWrapContent("check", axis: .Vertical)
-
-let dummy = ViewUtil.labelWithSize(20)
-dummy.text = "dummy2"
-
-let lay = LayoutHelper(view: container)
-    .withRandomColors(false)
-    .addViews(["dummy":dummy, "inc":includedView])
-    .addConstraints(["H:|[dummy][inc]|", "V:|[dummy]|", "V:|[inc]|"])
-    .setWrapContent("inc", axis: .Horizontal)
+    .addViews(["label":label])
+    .addConstraints(["H:|-[label(300)]-|", "V:|-[label(150)]-|"])
 
 mainView.backgroundColor = blackColor
 mainLayout.addViews(["container": container])
-mainLayout.addConstraints(["H:|[container]|", "V:|-[container(60)]"])
+mainLayout.addConstraints(["H:|[container]", "V:|-[container]"])
