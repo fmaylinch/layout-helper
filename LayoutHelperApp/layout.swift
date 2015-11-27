@@ -9,20 +9,21 @@ let blackColor = ViewUtil.color(red: 0, green: 0, blue: 0, alpha: 1)
 let container = UIView()
 container.backgroundColor = whiteColor
 
-let label = ViewUtil.labelWithSize(0)
-label.text = "Some text"
-label.textColor = whiteColor
+// 10000 is ViewUtil.SizeAuto
+let label = ViewUtil.labelWithSize(10000)
+label.text = "20"
+label.textColor = blackColor
 label.textAlignment = .Center
-label.backgroundColor = blackColor
-//label.layer.cornerRadius = 10
+label.backgroundColor = mainColor
+//label.layer.cornerRadius = 5
 //label.layer.masksToBounds = true
-label.layer.borderWidth = 30
-label.layer.borderColor = mainColor.CGColor
+//label.layer.borderWidth = 20
+//label.layer.borderColor = blackColor.CGColor
 
 let lay = LayoutHelper(view:container)
     .withRandomColors(false)
     .addViews(["label":label])
-    .addConstraints(["H:|-[label(300)]-|", "V:|-[label(150)]-|"])
+    .addConstraints(["H:|-[label(150)]-|", "V:|-[label(250)]-|"])
 
 mainView.backgroundColor = blackColor
 mainLayout.addViews(["container": container])

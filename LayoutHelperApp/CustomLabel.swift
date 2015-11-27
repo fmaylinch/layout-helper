@@ -1,8 +1,14 @@
 
 import UIKit
 
-/** UILabel with extra features like adjustsFontSizeToFitFrame and insets */
-
+/**
+ * UILabel with extra features like adjustsFontSizeToFitFrame and insets
+ *
+ * Take care with adjustsFontSizeToFitFrame because it's not perfect.
+ * Different characters have different heights (like 'p' or 'd') and they sometimes
+ * end up outside the frame if you don't leave some padding (you can use insets or
+ * put the label inside a view with some margin).
+ */
 public class CustomLabel: UILabel {
     
     /** If set to YES:
@@ -103,7 +109,7 @@ public class CustomLabel: UILabel {
             
             // Find label size for current font size
             let currentSize: CGSize = text.boundingRectWithSize(constraintSize,
-                options: .UsesLineFragmentOrigin,
+                options: [.UsesDeviceMetrics, .UsesLineFragmentOrigin], // Not sure about which NSStringDrawingOptions to use...
                 attributes: [NSFontAttributeName: font],
                 context: nil).size
             
@@ -112,10 +118,12 @@ public class CustomLabel: UILabel {
             if currentSize.height <= availableSize.height && (!singleChar || currentSize.width <= availableSize.width) {
                 minFontSize = fontSize
                 // the best size is in the bigger half
+                print("  Current size \(fontSize) too small : \(NSStringFromCGSize(currentSize))")
             }
             else {
                 maxFontSize = fontSize
                 // the best size is in the smaller half
+                print("  Current size \(fontSize) too big   : \(NSStringFromCGSize(currentSize))")
             }
         }
         

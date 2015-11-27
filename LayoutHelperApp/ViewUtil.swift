@@ -4,7 +4,7 @@ import UIKit
 public class ViewUtil {
     
     /** Use this special size to enable adjustsFontSizeToFitFrame */
-    public static let SizeAuto: Float = 0
+    public static let SizeAuto: Float = 10000
     
     public static let DefaultFontName = "ShareTech-Regular"
     public static let DefaultTextColor = ViewUtil.color(red: 90, green: 90, blue: 90, alpha: 1)
