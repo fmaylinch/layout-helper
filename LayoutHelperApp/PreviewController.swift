@@ -2,7 +2,7 @@
 /**
  * Controller to preview the layout
  *
- * TODO: support other sets like
+ * TODO: make processGenericSetProperty support things like:
  *
  * label.layer.borderColor = UIColor.whiteColor().CGColor
  * label.textAlignment = .Center
@@ -140,14 +140,8 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         (Regex.setWrap, processSetWrap),
 
         (Regex.setTextAlignment, processSetTextAlignment),
+        (Regex.setBorderColor, processSetBorderColor),
         (Regex.genericSetProperty, processGenericSetProperty),
-
-        /*
-        (Regex.setText, processSetText),
-        (Regex.setNumberOfLines, processSetNumberOfLines),
-        (Regex.setTextColor, processSetTextColor),
-        (Regex.setBackgroundColor, processSetBackgroundColor)
-        */
 
         (Regex.comment, processComment)
     ]
@@ -388,32 +382,6 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         reflectionHelper.performAssignment(target, value: value)
     }
 
-    // Sets text to a label
-    private func processSetText(result: RegexResult) {
-        
-        let variable = result.group(1)!
-        let text = result.group(2)!
-            .stringByReplacingOccurrencesOfString("\\n", withString: "\n") // dirty replacing
-        
-        print("Setting text `\(text)` to view `\(variable)`")
-        guard let label = getLabel(variable) else { return }
-
-        // TODO: try reflection
-        // label.text = text
-        ReflectionHelper.setProperty("text", value: text, target: label);
-    }
-
-    // Sets numberOfLines to a label
-    private func processSetNumberOfLines(result: RegexResult) {
-        
-        let variable = result.group(1)!
-        let numberOfLines = result.groupAsInt(2)!
-        
-        print("Setting `\(numberOfLines)` number of lines to label `\(variable)`")
-        guard let label = getLabel(variable) else { return }
-        label.numberOfLines = numberOfLines
-    }
- 
     // Sets alignment to a label
     private func processSetTextAlignment(result: RegexResult) {
         
@@ -435,29 +403,25 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         guard let label = getLabel(variable) else { return }
         label.textAlignment = getAlignment(alignStr)
     }
-    
-    // Sets text color to a label
-    private func processSetTextColor(result: RegexResult) {
+   
+    // Sets border color to a view
+    private func processSetBorderColor(result: RegexResult) {
         
         let variable = result.group(1)!
         let colorName = result.group(2)!
         
-        print("Setting text color `\(colorName)` to label `\(variable)`")
-        guard let label = getLabel(variable) else { return }
-        label.textColor = getColor(colorName)
-    }
-
-    // Sets background color to a view
-    private func processSetBackgroundColor(result: RegexResult) {
+        // Just so we remember to put CGColor
+        guard result.group(3) == ".CGColor" else {
+            displayError("Remember that layer.backgroundColor needs color.CGColor")
+            return;
+        }
         
-        let variable = result.group(1)!
-        let colorName = result.group(2)!
-        
-        print("Setting background color `\(colorName)` to view `\(variable)`")
         guard let view = getView(variable) else { return }
-        view.backgroundColor = getColor(colorName)
+        guard let color = getColor(colorName) else { return }
+        
+        print("Setting border color `\(colorName)` to view `\(variable)`")
+        view.layer.borderColor = color.CGColor
     }
-
 
     private func getLabel(name: String) -> UILabel? {
         let view = getView(name)
@@ -560,17 +524,11 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
 
         static var genericSetProperty = Regex.parse("^ *(\(Chain)) *= *(.*) *$")
 
-        // example: label.text = "hello"
-        static var setText = Regex.parse("^ *(\(Id))\\.text *= *\"(.*)\" *$")
-        // example: label.numberOfLines = 2
-        static var setNumberOfLines = Regex.parse("^ *(\(Id))\\.numberOfLines *= *(\(IntNum)) *$")
         // example: label.textAlignment = .Center
         static var setTextAlignment = Regex.parse("^ *(\(Id))\\.textAlignment *= *(\\.\(Id)) *$")
-        // example: label.textColor = color
-        static var setTextColor = Regex.parse("^ *(\(Id))\\.textColor *= *(\(Id)) *$")
-        // example: view.backgroundColor = color
-        static var setBackgroundColor = Regex.parse("^ *(\(Id))\\.backgroundColor *= *(\(Id)) *$")
-        
+        // example: label.layer.borderColor = color.CGColor
+        static var setBorderColor = Regex.parse("^ *(\(Id))\\.layer\\.borderColor *= *(\(Id))(\\.CGColor)? *$")
+
         static var comment = Regex.parse("^ *//")
         static var url = Regex.parse("^ *// *(http[^ ]+)")
         static var empty = Regex.parse("^ *$")

@@ -16,6 +16,11 @@ let check = ViewUtil.labelWithSize(18)
 check.text = "V"
 check.textColor = whiteColor
 check.textAlignment = .Center
+check.backgroundColor = blackColor
+check.layer.cornerRadius = 10
+check.layer.borderWidth = 2
+check.layer.masksToBounds = true
+check.layer.borderColor = whiteColor.CGColor
 
 let club = ViewUtil.labelWithSize(11)
 club.text = "CLUB\nPREMIUM"
