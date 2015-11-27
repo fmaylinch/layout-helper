@@ -58,6 +58,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7C1E27761C08815B00C848E5 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				7C4363961C000AC400EAF293 /* LayoutHelper.swift */,
+				7C43639C1C000C9500EAF293 /* ViewUtil.swift */,
+				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
+				7C4363B21C02A04100EAF293 /* RegexResult.swift */,
+				7C1E27711C07BC6800C848E5 /* ReflectionHelper.h */,
+				7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
+		7C1E27771C08816B00C848E5 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				7C4363861C000A7500EAF293 /* ViewController.swift */,
+				7C4363A91C01445500EAF293 /* CodeController.swift */,
+				7C4363A71C013E7C00EAF293 /* PreviewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		7C4363781C000A7500EAF293 = {
 			isa = PBXGroup;
 			children = (
@@ -77,22 +100,15 @@
 		7C4363831C000A7500EAF293 /* LayoutHelperApp */ = {
 			isa = PBXGroup;
 			children = (
-				7C4363981C000C3A00EAF293 /* Fonts */,
-				7C4363861C000A7500EAF293 /* ViewController.swift */,
-				7C4363A91C01445500EAF293 /* CodeController.swift */,
 				7C4363B01C02617F00EAF293 /* layout.swift */,
-				7C4363A71C013E7C00EAF293 /* PreviewController.swift */,
-				7C4363961C000AC400EAF293 /* LayoutHelper.swift */,
-				7C43639C1C000C9500EAF293 /* ViewUtil.swift */,
-				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
+				7C1E27771C08816B00C848E5 /* Controllers */,
+				7C1E27761C08815B00C848E5 /* Util */,
+				7C4363981C000C3A00EAF293 /* Fonts */,
 				7C4363881C000A7500EAF293 /* Main.storyboard */,
 				7C43638B1C000A7500EAF293 /* Assets.xcassets */,
 				7C4363841C000A7500EAF293 /* AppDelegate.swift */,
 				7C43638D1C000A7500EAF293 /* LaunchScreen.storyboard */,
 				7C4363901C000A7500EAF293 /* Info.plist */,
-				7C4363B21C02A04100EAF293 /* RegexResult.swift */,
-				7C1E27711C07BC6800C848E5 /* ReflectionHelper.h */,
-				7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */,
 				7C1E27701C07BC6700C848E5 /* LayoutHelperApp-Bridging-Header.h */,
 			);
 			path = LayoutHelperApp;
