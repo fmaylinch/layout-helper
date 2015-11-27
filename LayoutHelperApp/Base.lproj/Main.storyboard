@@ -90,38 +90,14 @@
                                     <constraint firstItem="Cpo-qt-i62" firstAttribute="top" secondItem="0tH-UX-B11" secondAttribute="top" constant="8" id="pCs-PW-9Vk"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ALn-6F-hg4" userLabel="content">
-                                <rect key="frame" x="0.0" y="268" width="600" height="65"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="65" id="vtr-7I-8Z7"/>
-                                </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ys3-Xp-grA" userLabel="content2">
-                                <rect key="frame" x="0.0" y="341" width="600" height="65"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="65" id="CkA-RN-Dd0"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="leadingMargin" secondItem="0tH-UX-B11" secondAttribute="leading" id="0kK-sw-xzw"/>
-                            <constraint firstAttribute="trailing" secondItem="ALn-6F-hg4" secondAttribute="trailing" id="FPZ-y5-vLV"/>
-                            <constraint firstItem="ys3-Xp-grA" firstAttribute="top" secondItem="ALn-6F-hg4" secondAttribute="bottom" constant="8" id="OVk-0s-aeP"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0tH-UX-B11" secondAttribute="trailing" id="TXd-sL-tu8"/>
-                            <constraint firstItem="ys3-Xp-grA" firstAttribute="trailing" secondItem="ALn-6F-hg4" secondAttribute="trailing" id="Te8-iS-nt0"/>
                             <constraint firstItem="0tH-UX-B11" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="WcG-x7-ZrL"/>
-                            <constraint firstItem="ys3-Xp-grA" firstAttribute="leading" secondItem="ALn-6F-hg4" secondAttribute="leading" id="XCM-BP-BYI"/>
-                            <constraint firstItem="ALn-6F-hg4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="iYq-nP-FTT"/>
-                            <constraint firstItem="ALn-6F-hg4" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="m3F-98-Pcm"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="content" destination="ALn-6F-hg4" id="oJs-0X-mqb"/>
-                        <outlet property="content2" destination="ys3-Xp-grA" id="0ps-U3-hEA"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

@@ -15,7 +15,6 @@
 		7C43638F1C000A7500EAF293 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C43638D1C000A7500EAF293 /* LaunchScreen.storyboard */; };
 		7C4363971C000AC400EAF293 /* LayoutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363961C000AC400EAF293 /* LayoutHelper.swift */; };
 		7C43639D1C000C9500EAF293 /* ViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C43639C1C000C9500EAF293 /* ViewUtil.swift */; };
-		7C43639F1C000ED400EAF293 /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C43639E1C000ED400EAF293 /* EventCell.swift */; };
 		7C4363A01C00157900EAF293 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C4363991C000C6A00EAF293 /* FontAwesome.ttf */; };
 		7C4363A11C00157A00EAF293 /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C43639A1C000C6A00EAF293 /* OpenSans-Light.ttf */; };
 		7C4363A21C00157A00EAF293 /* ShareTech-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C43639B1C000C6A00EAF293 /* ShareTech-Regular.ttf */; };
@@ -41,7 +40,6 @@
 		7C43639A1C000C6A00EAF293 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		7C43639B1C000C6A00EAF293 /* ShareTech-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ShareTech-Regular.ttf"; sourceTree = "<group>"; };
 		7C43639C1C000C9500EAF293 /* ViewUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewUtil.swift; sourceTree = "<group>"; };
-		7C43639E1C000ED400EAF293 /* EventCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		7C4363A71C013E7C00EAF293 /* PreviewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewController.swift; sourceTree = "<group>"; };
 		7C4363A91C01445500EAF293 /* CodeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeController.swift; sourceTree = "<group>"; };
 		7C4363AC1C02305000EAF293 /* String+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Utils.swift"; sourceTree = "<group>"; };
@@ -80,7 +78,6 @@
 			isa = PBXGroup;
 			children = (
 				7C4363981C000C3A00EAF293 /* Fonts */,
-				7C43639E1C000ED400EAF293 /* EventCell.swift */,
 				7C4363861C000A7500EAF293 /* ViewController.swift */,
 				7C4363A91C01445500EAF293 /* CodeController.swift */,
 				7C4363B01C02617F00EAF293 /* layout.swift */,
@@ -190,7 +187,6 @@
 				7C1E27731C07BC6800C848E5 /* ReflectionHelper.m in Sources */,
 				7C4363871C000A7500EAF293 /* ViewController.swift in Sources */,
 				7C4363971C000AC400EAF293 /* LayoutHelper.swift in Sources */,
-				7C43639F1C000ED400EAF293 /* EventCell.swift in Sources */,
 				7C43639D1C000C9500EAF293 /* ViewUtil.swift in Sources */,
 				7C4363851C000A7500EAF293 /* AppDelegate.swift in Sources */,
 				7C4363B31C02A04100EAF293 /* RegexResult.swift in Sources */,
