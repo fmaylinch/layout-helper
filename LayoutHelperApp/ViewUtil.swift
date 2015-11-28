@@ -7,6 +7,7 @@ public class ViewUtil {
     public static let SizeAuto: Float = 10000
     
     public static let DefaultFontName = "ShareTech-Regular"
+    public static let SecondFont = "OpenSans-Light"
     public static let DefaultTextColor = ViewUtil.color(red: 90, green: 90, blue: 90, alpha: 1)
     public static let MainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
 
@@ -51,7 +52,7 @@ public class ViewUtil {
     }
 
     public class func fontSecondWithSize(size: Float) -> UIFont {
-        return font("OpenSans-Light", size: size)
+        return font(SecondFont, size: size)
     }
 
     public class func fontAwesomeWithSize(size: Float) -> UIFont {

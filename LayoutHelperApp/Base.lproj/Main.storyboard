@@ -6,103 +6,6 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
-            <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="LayoutHelperApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0tH-UX-B11" userLabel="sample">
-                                <rect key="frame" x="20" y="20" width="560" height="120"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xXt-ex-tf9">
-                                        <rect key="frame" x="8" y="8" width="119" height="104"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="wrap 1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Svn-Dr-0xg">
-                                                <rect key="frame" x="8" y="8" width="103" height="30"/>
-                                                <color key="backgroundColor" red="0.78705542127071826" green="0.16902325155375753" blue="0.21805380571584859" alpha="1" colorSpace="calibratedRGB"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="wrap two" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uUm-a6-stL">
-                                                <rect key="frame" x="8" y="66" width="103" height="30"/>
-                                                <color key="backgroundColor" red="0.78705542127071826" green="0.69628726704906685" blue="0.20361633778033911" alpha="1" colorSpace="calibratedRGB"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" red="0.15186301457709162" green="0.54771667817679559" blue="0.17592824830655729" alpha="1" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="bottom" secondItem="uUm-a6-stL" secondAttribute="bottom" constant="8" id="GTW-bP-wOU"/>
-                                            <constraint firstAttribute="trailing" secondItem="Svn-Dr-0xg" secondAttribute="trailing" constant="8" id="Txu-NM-OOg"/>
-                                            <constraint firstItem="uUm-a6-stL" firstAttribute="leading" secondItem="xXt-ex-tf9" secondAttribute="leading" constant="8" id="b1u-iv-VYw"/>
-                                            <constraint firstAttribute="trailing" secondItem="uUm-a6-stL" secondAttribute="trailing" constant="8" id="bSG-T8-uP8"/>
-                                            <constraint firstItem="Svn-Dr-0xg" firstAttribute="leading" secondItem="xXt-ex-tf9" secondAttribute="leading" constant="8" id="dpE-9Y-dKc"/>
-                                            <constraint firstItem="Svn-Dr-0xg" firstAttribute="top" secondItem="xXt-ex-tf9" secondAttribute="top" constant="8" id="uxT-xB-5fE"/>
-                                        </constraints>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cpo-qt-i62">
-                                        <rect key="frame" x="135" y="8" width="417" height="104"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="fill 1 this text is too long, even for wide screens" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IWI-hx-Kcj">
-                                                <rect key="frame" x="8" y="8" width="401" height="30"/>
-                                                <color key="backgroundColor" red="0.72274634761617329" green="0.30962453006525953" blue="0.78705542127071826" alpha="1" colorSpace="calibratedRGB"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="fill 2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="teo-Dw-15d">
-                                                <rect key="frame" x="8" y="66" width="401" height="30"/>
-                                                <color key="backgroundColor" red="0.78705542127071826" green="0.398682704381983" blue="0.15783462805069401" alpha="1" colorSpace="calibratedRGB"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" red="0.20000769776883917" green="0.32130168151992217" blue="0.78705542127071826" alpha="1" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="teo-Dw-15d" secondAttribute="trailing" constant="8" id="NkZ-Fc-umX"/>
-                                            <constraint firstItem="IWI-hx-Kcj" firstAttribute="top" secondItem="Cpo-qt-i62" secondAttribute="top" constant="8" id="Z9r-E6-9DB"/>
-                                            <constraint firstAttribute="trailing" secondItem="IWI-hx-Kcj" secondAttribute="trailing" constant="8" id="cua-7H-ue3"/>
-                                            <constraint firstItem="IWI-hx-Kcj" firstAttribute="leading" secondItem="Cpo-qt-i62" secondAttribute="leading" constant="8" id="khN-e0-D43"/>
-                                            <constraint firstItem="teo-Dw-15d" firstAttribute="leading" secondItem="Cpo-qt-i62" secondAttribute="leading" constant="8" id="nFn-bY-JhR"/>
-                                            <constraint firstAttribute="bottom" secondItem="teo-Dw-15d" secondAttribute="bottom" constant="8" id="nNc-Rf-Jdk"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstItem="Cpo-qt-i62" firstAttribute="leading" secondItem="xXt-ex-tf9" secondAttribute="trailing" constant="8" id="0rW-pI-gMp"/>
-                                    <constraint firstAttribute="bottom" secondItem="xXt-ex-tf9" secondAttribute="bottom" constant="8" id="NxP-Rx-8Yi"/>
-                                    <constraint firstAttribute="bottom" secondItem="Cpo-qt-i62" secondAttribute="bottom" constant="8" id="P6N-Xe-leO"/>
-                                    <constraint firstItem="xXt-ex-tf9" firstAttribute="leading" secondItem="0tH-UX-B11" secondAttribute="leading" constant="8" id="T78-dd-bgb"/>
-                                    <constraint firstItem="xXt-ex-tf9" firstAttribute="top" secondItem="0tH-UX-B11" secondAttribute="top" constant="8" id="WyE-6B-XAY"/>
-                                    <constraint firstAttribute="height" constant="120" id="aJC-KK-L7Y"/>
-                                    <constraint firstAttribute="trailing" secondItem="Cpo-qt-i62" secondAttribute="trailing" constant="8" id="dWQ-ta-k9b"/>
-                                    <constraint firstItem="Cpo-qt-i62" firstAttribute="top" secondItem="0tH-UX-B11" secondAttribute="top" constant="8" id="pCs-PW-9Vk"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="leadingMargin" secondItem="0tH-UX-B11" secondAttribute="leading" id="0kK-sw-xzw"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="0tH-UX-B11" secondAttribute="trailing" id="TXd-sL-tu8"/>
-                            <constraint firstItem="0tH-UX-B11" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="WcG-x7-ZrL"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="367" y="337"/>
-        </scene>
         <!--Code-->
         <scene sceneID="M6Q-UV-EZ0">
             <objects>
@@ -120,7 +23,7 @@
                                 <color key="backgroundColor" red="0.1294193203" green="0.215087061" blue="0.40670838650000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <string key="text">// Add (supported) sentences directly here or
 // via remote file using this special comment:
-// http://192.168.1.242:5000/layout.swift
+// http://192.168.1.36:5000/layout.swift
 // -- http://localhost:5000/layout.swift
 </string>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

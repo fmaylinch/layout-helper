@@ -68,7 +68,6 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         objects[MainLayoutName] = mainLayout
         objects[MainViewName] = mainLayout.view
         
-        // hardcodedTest()
         parseText(code)
     }
     
@@ -220,7 +219,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
-    // Creates a UIView or UILabel
+    // Creates a UIView, UILabel or UIButton
     func processLet(result: RegexResult) {
     
         let variable = result.group(1)!
@@ -234,6 +233,9 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         } else if clazz == "UILabel" {
             print("Creating label `\(variable)`")
             objects[variable] = UILabel()
+        } else if clazz == "UIButton" {
+            print("Creating button `\(variable)`")
+            objects[variable] = UIButton()
         } else {
             displayError("Unsupported class \(clazz)")
         }
@@ -565,41 +567,5 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         let v = UIViewClass.init() // Should now give you a new object
         // let method = UIViewClass.methodForSelector(Selector("backgroundColor"))
         v.performSelector(Selector(""), withObject: "")
-    }
-    
-    
-    private func hardcodedTest() {
-        
-        print("Running hardcoded test")
-        
-        let main = getLayout(MainLayoutName)!
-       
-        // from here is parseable code
-        
-        let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.5)
-        let color2 = ViewUtil.color(red: 20, green: 150, blue: 150, alpha: 0.5)
-
-        let t1 = ViewUtil.labelWithSize(20)
-        t1.text = "wrapped color"
-        t1.textColor = color
-        
-        let t2 = ViewUtil.labelWithSize(20)
-        t2.text = "FILL colored"
-        t2.backgroundColor = color
-        
-        let v1 = UIView()
-        v1.backgroundColor = color2
-        let lay = LayoutHelper(view: v1)
-        
-        lay.addViews(["t1":t1, "t2":t2])
-        lay.addConstraints(["H:|-[t1]-[t2]-|", "V:|-[t1]-|", "V:|-[t2]-|"])
-        lay.setWrapContent("t1", axis: .Horizontal)
-        
-        main.addViews(["v1": v1])
-        main.addConstraints(["H:|-[v1]-|", "V:|-[v1]"])
-
-        // not supported yet
-        // lay.setHugging("t2", priority: 750, axis: .Horizontal)
-        // lay.setResistance("t2", priority: 1000, axis: .Horizontal)
     }
 }
