@@ -41,10 +41,13 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     // Dirty way of avoiding throws
     private var foundError = false
     
+    var toolbar: UIToolbar! // for pickers
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        toolbar = ViewUtil.pickerToolbar(self, doneAction: Selector("closePicker"))
         reflectionHelper = ReflectionHelper(objects: objects)
         setupDragView()
         resetView()
@@ -69,6 +72,25 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         objects[MainViewName] = mainLayout.view
         
         parseText(code)
+        staticChanges()
+    }
+    
+    // Executed after parseText
+    private func staticChanges()
+    {
+        // print("Adding changes after parse")
+    }
+ 
+    // Executed after parseText when coming from parseUrl
+    private func staticChangesAfterParseUrl()
+    {
+        // print("Adding changes after parseUrl")
+        
+        // guard let lay = getLayout("lay") else { return }
+    }
+
+    func closePicker() {
+        self.view.endEditing(true)
     }
     
     private func parseText(text: String) {
@@ -132,8 +154,10 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         
         (Regex.letView, processLet),
         (Regex.letLabel, processLetLabel),
+        (Regex.letButton, processLetButton),
         (Regex.letLayout, processLetLayout),
         (Regex.letColor, processLetColor),
+        (Regex.letPicker, processLetPicker),
         
         (Regex.withRandomColors, processWithRandomColors),
         (Regex.addViews, processAddViews),
@@ -186,6 +210,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
                 
                 dispatch_async(dispatch_get_main_queue(),{
                     self.parseText(result as String)
+                    self.staticChangesAfterParseUrl()
                 })
                 
             } else {
@@ -241,7 +266,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    // Creates a UILabel usingViewUtil.labelWithSize(s)
+    // Creates a CustomLabel usingViewUtil.labelWithSize(s)
     private func processLetLabel(result: RegexResult) {
         
         let variable = result.group(1)!
@@ -253,6 +278,35 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         let label = ViewUtil.labelWithSize(size)
         
         objects[variable] = label
+    }
+
+    // Creates a CustomButton using ViewUtil.buttonWithSize(s)
+    private func processLetButton(result: RegexResult) {
+        
+        let variable = result.group(1)!
+        let size = result.groupAsFloat(2)!
+        
+        guard letVarAvailable(variable) else { return }
+        
+        print("Creating button `\(variable)` with size `\(size)`")
+        let button = ViewUtil.buttonWithSize(size)
+        
+        objects[variable] = button
+    }
+
+    // Creates a IQDropDownTextField usingViewUtil.pickerField(...)
+    private func processLetPicker(result: RegexResult) {
+        
+        let variable = result.group(1)!
+        let placeholder = result.group(2)!
+        let size = result.groupAsFloat(3)!
+        
+        guard letVarAvailable(variable) else { return }
+        
+        print("Creating picker `\(variable)` with placeholder \"\(placeholder)\" and size `\(size)`")
+        let picker = ViewUtil.pickerField(placeholder, size: size, values: ["a", "b", "c"], toolbar: toolbar)
+        
+        objects[variable] = picker
     }
 
     // Creates a LayoutHelper
@@ -511,10 +565,14 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         static let letView = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
         // example: let label = ViewUtil.labelWithSize(20)
         static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(FloatNum))\\) *$")
+        // example: let button = ViewUtil.buttonWithSize(20)
+        static let letButton = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.buttonWithSize\\((\(FloatNum))\\) *$")
         // example: let lay = LayoutHelper(view: v1)
         static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\) *$")
         // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
         static var letColor = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.color\\(red: *(\(IntNum)), *green: *(\(IntNum)), *blue: *(\(IntNum)), *alpha: (\(FloatNum))\\) *$")
+        // example: let picker = ViewUtil.pickerField("City", size: 20, ...)
+        static let letPicker = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.pickerField\\(\"([^\"]*)\", size: *(\(FloatNum)), .+\\) *$")
         
         // example: lay.withRandomColors(true)
         static var withRandomColors = Regex.parse("^ *(\(Id))?\\.withRandomColors\\((true|false)\\)")

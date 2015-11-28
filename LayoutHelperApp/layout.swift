@@ -14,31 +14,54 @@ mainView.backgroundColor = blackColor
 mainLayout.addViews(["container": view])
 mainLayout.addConstraints(["H:|[container]|", "V:|[container]|"])
 
-let icon = UIView()
+
+let icon = ViewUtil.labelWithSize(20)
+icon.text = "Icon"
+icon.textColor = whiteColor
+icon.textAlignment = .Center
 icon.backgroundColor = mainColor
 
-let selector = UIView()
+let keywordPicker = ViewUtil.pickerField("Actividades", size: 20, values: values, toolbar: toolbar)
+let districtPicker = ViewUtil.pickerField("Barrios", size: 20, values: values, toolbar: toolbar)
+let gymPicker = ViewUtil.pickerField("Gimnasios", size: 20, values: values, toolbar: toolbar)
+
+let selector = ViewUtil.labelWithSize(20)
+selector.text = "Selector"
+selector.textColor = whiteColor
+selector.textAlignment = .Center
 selector.backgroundColor = mainColor
 
-let slider = UIView()
+let slider = ViewUtil.labelWithSize(20)
+slider.text = "Slider"
+slider.textColor = whiteColor
+slider.textAlignment = .Center
 slider.backgroundColor = mainColor
 
-let keywordPicker = ViewUtil.labelWithSize(20)
-keywordPicker.text = "Todas las actividades"
-keywordPicker.backgroundColor = whiteColor
-keywordPicker.layer.cornerRadius = 5
-keywordPicker.layer.masksToBounds = true
+let lowerHour = ViewUtil.labelWithSize(20)
+lowerHour.text = "6:00h"
+
+let upperHour = ViewUtil.labelWithSize(20)
+upperHour.text = "23:00h"
+
+let button = ViewUtil.buttonWithSize(20)
+button.title = "FILTRAR"
+
 
 let lay = LayoutHelper(view:view)
     .withRandomColors(false)
-    .addViews(["icon":icon, "keywordPicker":keywordPicker, "selector":selector, "slider":slider])
+    .addViews(["icon":icon, "selector":selector, "slider":slider])
+    .addViews(["keywordPicker":keywordPicker, "districtPicker":districtPicker, "gymPicker":gymPicker])
+    .addViews(["lowerHour":lowerHour, "upperHour":upperHour, "button":button])
     .addConstraints(["X:icon.centerX == parent.centerX"])
-    .addConstraints(["H:|-[keywordPicker]-|", "H:|-[selector]-|", "H:|-[slider]-|"])
-    .addConstraints(["V:|-[icon]-[keywordPicker]-[selector]-[slider]"])
+    .addConstraints(["H:|-[keywordPicker]-|", "H:|-[districtPicker]-|", "H:|-[gymPicker]-|"])
+    .addConstraints(["H:|-[selector]-|", "H:|-[slider]-|"])
+    .addConstraints(["H:|-[lowerHour]", "H:[upperHour]-|"])
+    .addConstraints(["X:button.centerX == parent.centerX"])
+    .addConstraints(["V:|-[icon]-[keywordPicker]-[districtPicker]-[gymPicker]-[selector]-[slider]"])
+    .addConstraints(["V:[slider]-[lowerHour]-[button]", "V:[slider]-[upperHour]"])
     // these constraints won't be necessary if the views have intrinsic size
-    .addConstraints(["V:[keywordPicker(40)]"])
     .addConstraints(["H:[icon(50)]", "V:[icon(50)]"])
-    .addConstraints(["V:[selector(40)]", "V:[slider(40)]"])
+    .addConstraints(["V:[selector(40)]", "V:[slider(30)]"])
 
 // 10000 is ViewUtil.SizeAuto
 //let label = ViewUtil.labelWithSize(40)
