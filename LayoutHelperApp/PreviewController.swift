@@ -60,6 +60,8 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     
     private func resetView() {
         
+        foundError = false
+
         objects.removeAllObjects()
         
         for view in mainView.subviews {
