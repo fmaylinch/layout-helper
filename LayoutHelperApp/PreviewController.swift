@@ -144,7 +144,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     func storeCurrentConstraintConstants() {
         currentX = containerTrailing.constant
         currentY = containerBottom.constant
-        print("Current margins: {\(currentX), \(currentY)}")
+        // print("Current margins: {\(currentX), \(currentY)}")
     }
 
     

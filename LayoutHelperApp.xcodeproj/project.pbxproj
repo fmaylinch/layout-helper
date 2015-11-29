@@ -35,6 +35,8 @@
 		7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReflectionHelper.m; sourceTree = "<group>"; };
 		7C1E27781C0893B800C848E5 /* CustomLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomLabel.swift; sourceTree = "<group>"; };
 		7C348FFB1C0A542300F37775 /* CustomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		7C3490061C0B6BA100F37775 /* Views.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Views.playground; sourceTree = "<group>"; };
+		7C3490071C0B77CB00F37775 /* Simple.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Simple.playground; sourceTree = "<group>"; };
 		7C4363811C000A7500EAF293 /* LayoutHelperApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayoutHelperApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C4363841C000A7500EAF293 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7C4363891C000A7500EAF293 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -128,6 +130,8 @@
 				7C43638D1C000A7500EAF293 /* LaunchScreen.storyboard */,
 				7C4363901C000A7500EAF293 /* Info.plist */,
 				7C1E27701C07BC6700C848E5 /* LayoutHelperApp-Bridging-Header.h */,
+				7C3490061C0B6BA100F37775 /* Views.playground */,
+				7C3490071C0B77CB00F37775 /* Simple.playground */,
 			);
 			path = LayoutHelperApp;
 			sourceTree = "<group>";

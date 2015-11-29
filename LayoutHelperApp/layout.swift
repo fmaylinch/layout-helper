@@ -15,7 +15,7 @@ mainLayout.addViews(["container": view])
 mainLayout.addConstraints(["H:|[container]|", "V:|[container]|"])
 
 
-let icon = ViewUtil.labelWithSize(20)
+let icon = ViewUtil.labelWithSize(1)
 icon.text = "Icon"
 icon.textColor = whiteColor
 icon.textAlignment = .Center
@@ -63,7 +63,7 @@ let lay = LayoutHelper(view:view)
     .addConstraints(["H:[icon(50)]", "V:[icon(50)]"])
     .addConstraints(["V:[selector(40)]", "V:[slider(30)]"])
 
-// 10000 is ViewUtil.SizeAuto
+// size 1 is ViewUtil.SizeAuto
 //let label = ViewUtil.labelWithSize(40)
 //label.text = "This is a sample text"
 //label.textColor = blackColor

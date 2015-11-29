@@ -3,8 +3,8 @@ import UIKit
 
 public class ViewUtil {
     
-    /** Use this special size to enable adjustsFontSizeToFitFrame */
-    public static let SizeAuto: Float = 10000
+    /** Use this special size to enable adjustsFontSizeToFitFrame. */
+    public static let SizeAuto: Float = 1
     
     public static let DefaultFontName = "ShareTech-Regular"
     public static let SecondFont = "OpenSans-Light"
@@ -14,9 +14,24 @@ public class ViewUtil {
     public static let MainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
     public static let MainDarkColor = ViewUtil.color(red:205, green:90, blue:97, alpha: 1)
 
+    // Color
     
     public class func color(red red:Int, green:Int, blue:Int, alpha:Float) -> UIColor {
         return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: CGFloat(alpha))
+    }
+    
+    public class func colorRgb(rgb: UInt) -> UIColor {
+        return colorRgba(rgb | 0xFF000000)
+    }
+    
+    public class func colorRgba(rgba: UInt) -> UIColor {
+        // inspired from http://stackoverflow.com/a/24074509/1121497
+        return UIColor(
+            red:   CGFloat((rgba & 0x00FF0000) >> 16) / 255.0,
+            green: CGFloat((rgba & 0x0000FF00) >> 8)  / 255.0,
+            blue:  CGFloat( rgba & 0x000000FF)        / 255.0,
+            alpha: CGFloat((rgba & 0xFF000000) >> 24) / 255.0
+        )
     }
     
     // Label

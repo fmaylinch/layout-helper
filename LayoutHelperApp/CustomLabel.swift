@@ -80,9 +80,9 @@ public class CustomLabel: UILabel {
             width: labelSize.width - insets.left - insets.right - label.layer.borderWidth * 2,
             height: labelSize.height - insets.top - insets.bottom - label.layer.borderWidth * 2)
         
-        print("Adjusting label with text: \(text)")
-        print("Label size     : \(NSStringFromCGSize(labelSize))")
-        print("Available size : \(NSStringFromCGSize(availableSize))")
+        //print("Adjusting label with text: \(text)")
+        //print("Label size     : \(NSStringFromCGSize(labelSize))")
+        //print("Available size : \(NSStringFromCGSize(availableSize))")
         
         // Fit label width-wise (but no constraint for singleChar)
         let constraintSize: CGSize = CGSizeMake(singleChar ? CGFloat.max : availableSize.width, CGFloat.max)
@@ -118,12 +118,12 @@ public class CustomLabel: UILabel {
             if currentSize.height <= availableSize.height && (!singleChar || currentSize.width <= availableSize.width) {
                 minFontSize = fontSize
                 // the best size is in the bigger half
-                print("  Current size \(fontSize) too small : \(NSStringFromCGSize(currentSize))")
+                //print("  Current size \(fontSize) too small : \(NSStringFromCGSize(currentSize))")
             }
             else {
                 maxFontSize = fontSize
                 // the best size is in the smaller half
-                print("  Current size \(fontSize) too big   : \(NSStringFromCGSize(currentSize))")
+                //print("  Current size \(fontSize) too big   : \(NSStringFromCGSize(currentSize))")
             }
         }
         
