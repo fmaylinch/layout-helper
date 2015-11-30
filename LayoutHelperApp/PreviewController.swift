@@ -86,7 +86,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     // Executed after parseText when coming from parseUrl
     private func staticChangesAfterParseUrl()
     {
-        // print("Adding changes after parseUrl")
+        print("Adding changes after parseUrl")
         
         // guard let lay = getLayout("lay") else { return }
     }
@@ -154,9 +154,10 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     // See below wen calling `function(self)(result)`
     private let regexToFuncs : [(NSRegularExpression, PreviewController -> RegexResult -> Void)] = [
         
-        (Regex.letView, processLet),
+        (Regex.letClass, processLetClass),
         (Regex.letLabel, processLetLabel),
         (Regex.letButton, processLetButton),
+        (Regex.letImage, processLetImage),
         (Regex.letLayout, processLetLayout),
         (Regex.letColor, processLetColor),
         (Regex.letPicker, processLetPicker),
@@ -246,26 +247,17 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
-    // Creates a UIView, UILabel or UIButton
-    func processLet(result: RegexResult) {
+    // Creates an instance of any class (using default init)
+    func processLetClass(result: RegexResult) {
     
         let variable = result.group(1)!
         let clazz = result.group(2)!
         
         guard letVarAvailable(variable) else { return }
         
-        if clazz == "UIView" {
-            print("Creating view `\(variable)`")
-            objects[variable] = UIView()
-        } else if clazz == "UILabel" {
-            print("Creating label `\(variable)`")
-            objects[variable] = UILabel()
-        } else if clazz == "UIButton" {
-            print("Creating button `\(variable)`")
-            objects[variable] = UIButton()
-        } else {
-            displayError("Unsupported class \(clazz)")
-        }
+        let object = ReflectionHelper.instanceFromClass(clazz)
+        print("Creating `\(variable)` as instance of \(clazz)")
+        objects[variable] = object
     }
     
     // Creates a CustomLabel usingViewUtil.labelWithSize(s)
@@ -295,6 +287,20 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         
         objects[variable] = button
     }
+    
+    // Creates a UIImageView
+    private func processLetImage(result: RegexResult) {
+        
+        let variable = result.group(1)!
+        let imageName = result.group(2)!
+        
+        guard letVarAvailable(variable) else { return }
+        
+        print("Creating image `\(variable)` from (file) name `\(imageName)`")
+        let image = UIImageView(image: UIImage(named: imageName))
+        
+        objects[variable] = image
+    }
 
     // Creates a IQDropDownTextField usingViewUtil.pickerField(...)
     private func processLetPicker(result: RegexResult) {
@@ -306,7 +312,9 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         guard letVarAvailable(variable) else { return }
         
         print("Creating picker `\(variable)` with placeholder \"\(placeholder)\" and size `\(size)`")
-        let picker = ViewUtil.pickerField(placeholder, size: size, values: ["a", "b", "c"], toolbar: toolbar)
+        let picker = ViewUtil.pickerField(placeholder, size: size,
+            values: ["Short value", "Some long value to see what happens with it", "c"],
+            toolbar: toolbar)
         
         objects[variable] = picker
     }
@@ -404,7 +412,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         let layoutName = getVariableName(result.group(1))
         let constraints = result.group(2)!
         
-        print("Adding views to layout `\(layoutName)`")
+        print("Adding constraints to layout `\(layoutName)`")
         guard let layout = getLayout(layoutName) else { return }
         
         for quotedConstraint in constraints.split(", ") {
@@ -563,12 +571,14 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         // chain of variable and properties like "label.layer.borderWidth"
         static let Chain: String = "[_a-zA-Z][_a-zA-Z0-9.]*"
 
-        // example: let v1 = UIView()
-        static let letView = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
+        // example: let field = UITextField()
+        static let letClass = Regex.parse("^ *let +(\(Id)) *= *(\(Id))\\(\\) *$")
         // example: let label = ViewUtil.labelWithSize(20)
         static let letLabel = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.labelWithSize\\((\(FloatNum))\\) *$")
         // example: let button = ViewUtil.buttonWithSize(20)
         static let letButton = Regex.parse("^ *let +(\(Id)) *= *ViewUtil\\.buttonWithSize\\((\(FloatNum))\\) *$")
+        // example: let image = UIImageView(image: UIImage(named: "events-filter"))
+        static let letImage = Regex.parse("^ *let +(\(Id)) *= *UIImageView\\(image: *UIImage\\(named: *\"([^\"]+)\"\\)\\) *$")
         // example: let lay = LayoutHelper(view: v1)
         static let letLayout = Regex.parse("^ *let +(\(Id)) *= *LayoutHelper\\(view: *(\(Id))\\) *$")
         // example: let color = ViewUtil.color(red: 255, green: 0, blue: 150, alpha: 0.7)
@@ -599,7 +609,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         static var empty = Regex.parse("^ *$")
         
         static func parse(pattern: String) -> NSRegularExpression {
-            print("Peparing regex: \(pattern)")
+            //print("Preparing regex: \(pattern)")
             return try! NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions())
         }
     }

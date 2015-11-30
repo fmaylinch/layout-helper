@@ -11,6 +11,9 @@
 /** Sets property. It's like: target.name = value; */
 + (void) setProperty:(NSString*)name value:(id)value target:(NSObject*)target;
 
+/** Creates an instance from the given class */
++ (id) instanceFromClass:(NSString*)clazz;
+
 - (instancetype) initWithObjects:(NSMutableDictionary<NSString*,NSObject*>*)objects;
 
 /** 

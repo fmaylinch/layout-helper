@@ -11,6 +11,8 @@
 		7C1E27731C07BC6800C848E5 /* ReflectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E27721C07BC6800C848E5 /* ReflectionHelper.m */; };
 		7C1E27791C0893B800C848E5 /* CustomLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1E27781C0893B800C848E5 /* CustomLabel.swift */; };
 		7C348FFC1C0A542300F37775 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C348FFB1C0A542300F37775 /* CustomButton.swift */; };
+		7C34900B1C0B8AED00F37775 /* CustomDropDown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C34900A1C0B8AED00F37775 /* CustomDropDown.swift */; };
+		7C34901C1C0CA34600F37775 /* events-filter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C34901B1C0CA34600F37775 /* events-filter@2x.png */; };
 		7C4363851C000A7500EAF293 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363841C000A7500EAF293 /* AppDelegate.swift */; };
 		7C43638A1C000A7500EAF293 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C4363881C000A7500EAF293 /* Main.storyboard */; };
 		7C43638C1C000A7500EAF293 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C43638B1C000A7500EAF293 /* Assets.xcassets */; };
@@ -37,6 +39,8 @@
 		7C348FFB1C0A542300F37775 /* CustomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		7C3490061C0B6BA100F37775 /* Views.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Views.playground; sourceTree = "<group>"; };
 		7C3490071C0B77CB00F37775 /* Simple.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Simple.playground; sourceTree = "<group>"; };
+		7C34900A1C0B8AED00F37775 /* CustomDropDown.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDropDown.swift; sourceTree = "<group>"; };
+		7C34901B1C0CA34600F37775 /* events-filter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "events-filter@2x.png"; sourceTree = "<group>"; };
 		7C4363811C000A7500EAF293 /* LayoutHelperApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayoutHelperApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C4363841C000A7500EAF293 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7C4363891C000A7500EAF293 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 				7C43639C1C000C9500EAF293 /* ViewUtil.swift */,
 				7C1E27781C0893B800C848E5 /* CustomLabel.swift */,
 				7C348FFB1C0A542300F37775 /* CustomButton.swift */,
+				7C34900A1C0B8AED00F37775 /* CustomDropDown.swift */,
 				7C4363AC1C02305000EAF293 /* String+Utils.swift */,
 				7C4363B21C02A04100EAF293 /* RegexResult.swift */,
 				7C1E27711C07BC6800C848E5 /* ReflectionHelper.h */,
@@ -97,6 +102,14 @@
 				7C4363A71C013E7C00EAF293 /* PreviewController.swift */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		7C34901A1C0CA32400F37775 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				7C34901B1C0CA34600F37775 /* events-filter@2x.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 		7C4363781C000A7500EAF293 = {
@@ -124,6 +137,7 @@
 				7C1E27771C08816B00C848E5 /* Controllers */,
 				7C1E27761C08815B00C848E5 /* Util */,
 				7C4363981C000C3A00EAF293 /* Fonts */,
+				7C34901A1C0CA32400F37775 /* Images */,
 				7C4363881C000A7500EAF293 /* Main.storyboard */,
 				7C43638B1C000A7500EAF293 /* Assets.xcassets */,
 				7C4363841C000A7500EAF293 /* AppDelegate.swift */,
@@ -220,6 +234,7 @@
 				7C4363A11C00157A00EAF293 /* OpenSans-Light.ttf in Resources */,
 				7C4363A21C00157A00EAF293 /* ShareTech-Regular.ttf in Resources */,
 				7C43638F1C000A7500EAF293 /* LaunchScreen.storyboard in Resources */,
+				7C34901C1C0CA34600F37775 /* events-filter@2x.png in Resources */,
 				7C43638C1C000A7500EAF293 /* Assets.xcassets in Resources */,
 				7C43638A1C000A7500EAF293 /* Main.storyboard in Resources */,
 			);
@@ -282,6 +297,7 @@
 			files = (
 				7C4363AD1C02305000EAF293 /* String+Utils.swift in Sources */,
 				7C4363A81C013E7C00EAF293 /* PreviewController.swift in Sources */,
+				7C34900B1C0B8AED00F37775 /* CustomDropDown.swift in Sources */,
 				7C1E27731C07BC6800C848E5 /* ReflectionHelper.m in Sources */,
 				7C4363971C000AC400EAF293 /* LayoutHelper.swift in Sources */,
 				7C348FFC1C0A542300F37775 /* CustomButton.swift in Sources */,

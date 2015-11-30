@@ -15,15 +15,11 @@ mainLayout.addViews(["container": view])
 mainLayout.addConstraints(["H:|[container]|", "V:|[container]|"])
 
 
-let icon = ViewUtil.labelWithSize(1)
-icon.text = "Icon"
-icon.textColor = whiteColor
-icon.textAlignment = .Center
-icon.backgroundColor = mainColor
+let icon = UIImageView(image: UIImage(named: "events-filter"))
 
-let keywordPicker = ViewUtil.pickerField("Actividades", size: 20, values: values, toolbar: toolbar)
-let districtPicker = ViewUtil.pickerField("Barrios", size: 20, values: values, toolbar: toolbar)
-let gymPicker = ViewUtil.pickerField("Gimnasios", size: 20, values: values, toolbar: toolbar)
+let keywordPicker = ViewUtil.pickerField("Actividades", size: 25, values: values, toolbar: toolbar)
+let districtPicker = ViewUtil.pickerField("Barrios", size: 25, values: values, toolbar: toolbar)
+let gymPicker = ViewUtil.pickerField("Gimnasios", size: 25, values: values, toolbar: toolbar)
 
 let selector = ViewUtil.labelWithSize(20)
 selector.text = "Selector"
@@ -37,13 +33,13 @@ slider.textColor = whiteColor
 slider.textAlignment = .Center
 slider.backgroundColor = mainColor
 
-let lowerHour = ViewUtil.labelWithSize(20)
+let lowerHour = ViewUtil.labelWithSize(22)
 lowerHour.text = "6:00h"
 
-let upperHour = ViewUtil.labelWithSize(20)
+let upperHour = ViewUtil.labelWithSize(22)
 upperHour.text = "23:00h"
 
-let button = ViewUtil.buttonWithSize(20)
+let button = ViewUtil.buttonWithSize(22)
 button.title = "FILTRAR"
 
 
@@ -56,14 +52,12 @@ let lay = LayoutHelper(view:view)
     .addConstraints(["H:|-[keywordPicker]-|", "H:|-[districtPicker]-|", "H:|-[gymPicker]-|"])
     .addConstraints(["H:|-[selector]-|", "H:|-[slider]-|"])
     .addConstraints(["H:|-[lowerHour]", "H:[upperHour]-|"])
-    .addConstraints(["X:button.centerX == parent.centerX"])
-    .addConstraints(["V:|-[icon]-[keywordPicker]-[districtPicker]-[gymPicker]-[selector]-[slider]"])
-    .addConstraints(["V:[slider]-[lowerHour]-[button]", "V:[slider]-[upperHour]"])
-    // these constraints won't be necessary if the views have intrinsic size
-    .addConstraints(["H:[icon(50)]", "V:[icon(50)]"])
+    .addConstraints(["H:|-(40)-[button]-(40)-|"])
+    .addConstraints(["V:|-(20)-[icon]-(20)-[keywordPicker]-(20)-[districtPicker]-(20)-[gymPicker]-(20)-[selector]-[slider]"])
+    .addConstraints(["V:[slider]-[lowerHour]-(15)-[button]", "V:[slider]-[upperHour]"])
     .addConstraints(["V:[selector(40)]", "V:[slider(30)]"])
 
-// size 1 is ViewUtil.SizeAuto
+// use size 1 for ViewUtil.SizeAuto
 //let label = ViewUtil.labelWithSize(40)
 //label.text = "This is a sample text"
 //label.textColor = blackColor

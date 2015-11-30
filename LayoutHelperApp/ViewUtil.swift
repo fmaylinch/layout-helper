@@ -1,30 +1,30 @@
 
 import UIKit
 
-public class ViewUtil {
+class ViewUtil {
     
     /** Use this special size to enable adjustsFontSizeToFitFrame. */
-    public static let SizeAuto: Float = 1
+    static let SizeAuto: Float = 1
     
-    public static let DefaultFontName = "ShareTech-Regular"
-    public static let SecondFont = "OpenSans-Light"
+    static let DefaultFontName = "ShareTech-Regular"
+    static let SecondFont = "OpenSans-Light"
     
-    public static let DefaultTextColor = ViewUtil.color(red: 90, green: 90, blue: 90, alpha: 1)
-    public static let GrayColor = ViewUtil.color(red: 180, green: 180, blue: 180, alpha: 1)
-    public static let MainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
-    public static let MainDarkColor = ViewUtil.color(red:205, green:90, blue:97, alpha: 1)
+    static let DefaultTextColor = ViewUtil.color(red: 90, green: 90, blue: 90, alpha: 1)
+    static let GrayColor = ViewUtil.color(red: 180, green: 180, blue: 180, alpha: 1)
+    static let MainColor = ViewUtil.color(red: 229, green: 105, blue: 108, alpha: 1)
+    static let MainDarkColor = ViewUtil.color(red:205, green:90, blue:97, alpha: 1)
 
     // Color
     
-    public class func color(red red:Int, green:Int, blue:Int, alpha:Float) -> UIColor {
+    class func color(red red:Int, green:Int, blue:Int, alpha:Float) -> UIColor {
         return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: CGFloat(alpha))
     }
     
-    public class func colorRgb(rgb: UInt) -> UIColor {
+    class func colorRgb(rgb: UInt) -> UIColor {
         return colorRgba(rgb | 0xFF000000)
     }
     
-    public class func colorRgba(rgba: UInt) -> UIColor {
+    class func colorRgba(rgba: UInt) -> UIColor {
         // inspired from http://stackoverflow.com/a/24074509/1121497
         return UIColor(
             red:   CGFloat((rgba & 0x00FF0000) >> 16) / 255.0,
@@ -37,12 +37,12 @@ public class ViewUtil {
     // Label
     
     /** Creates label with DefaultFontName and DefaultTextColor */
-    public class func labelWithSize(size: Float) -> CustomLabel {
+    class func labelWithSize(size: Float) -> CustomLabel {
         return labelWithSize(size, color: DefaultTextColor)
     }
 
     /** Creates label using DefaultFontName */
-    public class func labelWithSize(size: Float, color: UIColor) -> CustomLabel {
+    class func labelWithSize(size: Float, color: UIColor) -> CustomLabel {
         return labelWithFont(fontMainWithSize(size), color: color)
     }
 
@@ -51,14 +51,14 @@ public class ViewUtil {
      * Text should include font awesome symbols like '\u{f00c}'.
      * See: http://fortawesome.github.io/Font-Awesome/cheatsheet
      */
-    public class func labelAwesome(text: String, size: Float, color: UIColor) -> CustomLabel {
+    class func labelAwesome(text: String, size: Float, color: UIColor) -> CustomLabel {
         let label = labelWithFont(fontAwesomeWithSize(size), color: color)
         label.text = text
         return label
     }
 
     /** Creates a label with given font and color */
-    public class func labelWithFont(font: UIFont, color: UIColor) -> CustomLabel {
+    class func labelWithFont(font: UIFont, color: UIColor) -> CustomLabel {
         
         let label = CustomLabel()
         label.textColor = color
@@ -71,7 +71,7 @@ public class ViewUtil {
     // Button
     
     /** Creates button with default colors and font */
-    public class func buttonWithSize(size: Float) -> CustomButton {
+    class func buttonWithSize(size: Float) -> CustomButton {
         
         let button = CustomButton()
         button.titleLabel?.font = ViewUtil.fontMainWithSize(size)
@@ -86,18 +86,20 @@ public class ViewUtil {
    
     // Picker
         
-    public class func pickerField(placeholder:String, size: Float, values:[String!], toolbar:UIToolbar) -> IQDropDownTextField
+    class func pickerField(placeholder:String, size: Float, values:[String!], toolbar:UIToolbar) -> CustomDropDown
     {
-        let field = IQDropDownTextField()
+        let field = CustomDropDown()
         field.placeholder = placeholder
         field.textColor = DefaultTextColor
         field.backgroundColor = UIColor.whiteColor()
         field.layer.borderColor = ViewUtil.GrayColor.CGColor
         field.layer.borderWidth = 1.0
         field.layer.cornerRadius = 5
-        field.borderStyle = UITextBorderStyle.RoundedRect
         field.font = ViewUtil.fontMainWithSize(size)
         
+        let pad : CGFloat = CGFloat(size) / 4 // relative padding to font size
+        field.padding = UIEdgeInsets(top: pad, left: pad*2, bottom: pad, right: 0)
+
         field.optionalItemText = placeholder
         field.isOptionalDropDown = true
         field.itemList = values
@@ -106,7 +108,7 @@ public class ViewUtil {
         return field
     }
     
-    public class func pickerToolbar(target: AnyObject, doneAction: Selector) -> UIToolbar
+    class func pickerToolbar(target: AnyObject, doneAction: Selector) -> UIToolbar
     {
         let toolbar = UIToolbar()
         // toolbar.barStyle = .Default
@@ -119,15 +121,15 @@ public class ViewUtil {
     
     // Font
     
-    public class func fontMainWithSize(size: Float) -> UIFont {
+    class func fontMainWithSize(size: Float) -> UIFont {
         return font(DefaultFontName, size: size)
     }
 
-    public class func fontSecondWithSize(size: Float) -> UIFont {
+    class func fontSecondWithSize(size: Float) -> UIFont {
         return font(SecondFont, size: size)
     }
 
-    public class func fontAwesomeWithSize(size: Float) -> UIFont {
+    class func fontAwesomeWithSize(size: Float) -> UIFont {
         return font("FontAwesome", size: size)
     }
     
@@ -137,5 +139,11 @@ public class ViewUtil {
         } else {
             fatalError("Could not load font `\(name)`")
         }
+    }
+    
+    // Screen
+    
+    class func screenSize() -> CGSize {
+        return UIScreen.mainScreen().bounds.size
     }
 }

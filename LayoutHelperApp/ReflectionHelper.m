@@ -1,5 +1,6 @@
 
 #import "ReflectionHelper.h"
+//#import "LayoutHelperApp-Swift.h"
 
 @implementation ReflectionHelper
 
@@ -8,9 +9,13 @@
 }
 
 + (void) setProperty:(NSString*)name value:(id)value target:(NSObject*)target {
-    
+
     NSLog(@"Setting property %@", name);
     [target setValue:value forKey:name];
+}
+
++ (id) instanceFromClass:(NSString*)clazz {
+    return [[NSClassFromString(clazz) alloc] init];
 }
 
 - (instancetype) initWithObjects:(NSMutableDictionary*)objects {
