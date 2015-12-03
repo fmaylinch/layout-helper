@@ -11,8 +11,8 @@ public class LayoutHelper {
     public static let DefaultPriority: UILayoutPriority = 0
     
     public let view: UIView
-    private var subviews = [String:UIView]()
-    public var metrics = [String:CGFloat]()
+    private var subviews = [String:AnyObject]() // may contain UILayoutGuide objects
+    public var metrics = [String:Float]()
     
     public var displayRandomColors = false
     
@@ -28,13 +28,15 @@ public class LayoutHelper {
     // Add views
     
     public func fillWithView(view: UIView) -> LayoutHelper {
-        return addView(view, key: "v").addConstraints(["H:|[v]|", "V:|[v]|"])
+        return addView(view, key: "view").addConstraints(["H:|[view]|", "V:|[view]|"])
     }
     
     public func fillWithView(view: UIView, margins:UIEdgeInsets) -> LayoutHelper {
-        return addView(view, key: "v")
-            .withMetrics(["l":margins.left, "t":margins.top, "r":margins.right, "b":margins.bottom])
-            .addConstraints(["H:|-(l)-[v]-(r)-|", "V:|-(t)-[v]-(b)-|"])
+        return addView(view, key: "view")
+            .withMetrics([
+                "left":Float(margins.left), "right":Float(margins.right),
+                "top":Float(margins.top), "bottom":Float(margins.bottom)])
+            .addConstraints(["H:|-(left)-[view]-(right)-|", "V:|-(top)-[view]-(bottom)-|"])
     }
     
     public func addViews(views: [String:UIView]) -> LayoutHelper {
@@ -68,6 +70,15 @@ public class LayoutHelper {
         return self
     }
     
+    // Layout support guides
+    
+    public func addGuides(guides: [String:UILayoutSupport]) -> LayoutHelper {
+        for (key,guide) in guides {
+            subviews[key] = guide
+        }
+        return self
+    }
+    
     // Various
     
     public func withRandomColors(displayRandomColors: Bool) -> LayoutHelper {
@@ -75,7 +86,7 @@ public class LayoutHelper {
         return self
     }
     
-    public func withMetrics(metrics: [String:CGFloat]) -> LayoutHelper {
+    public func withMetrics(metrics: [String:Float]) -> LayoutHelper {
         self.metrics = metrics
         return self
     }
@@ -204,33 +215,33 @@ public class LayoutHelper {
         let attr1: NSLayoutAttribute = parseAttribute(attr1Str)
         let attr2: NSLayoutAttribute = parseAttribute(attr2Str)
         let relation: NSLayoutRelation = parseRelation(relationStr)
-        var multiplier: CGFloat = 1
+        var multiplier: Float = 1
         if match.rangeAtIndex(6).location != NSNotFound {
             let operation: String = constraint.substring(match.rangeAtIndex(6))
             let multiplierValue: String = constraint.substring(match.rangeAtIndex(7))
-            multiplier = getFloatFromValue(multiplierValue)
+            multiplier = getFloat(multiplierValue)
             if (operation == "/") {
                 multiplier = 1 / multiplier
             }
         }
-        var constant: CGFloat = 0
+        var constant: Float = 0
         if match.rangeAtIndex(8).location != NSNotFound {
             let operation: String = constraint.substring(match.rangeAtIndex(8))
             let constantValue: String = constraint.substring(match.rangeAtIndex(9))
-            constant = getFloatFromValue(constantValue)
+            constant = getFloat(constantValue)
             if (operation == "-") {
                 constant = -constant
             }
         }
         let c: NSLayoutConstraint = NSLayoutConstraint(
             item: item1, attribute: attr1, relatedBy: relation,
-            toItem: item2, attribute: attr2, multiplier: multiplier, constant: constant)
+            toItem: item2, attribute: attr2, multiplier: CGFloat(multiplier), constant: CGFloat(constant))
         
         return [c]
     }
     
     /** `value` may be the name of a metric, or a literal float value */
-    private func getFloatFromValue(value: String) -> CGFloat
+    private func getFloat(value: String) -> Float
     {
         if stringIsIdentifier(value) {
             if let metric = metrics[value] {
@@ -242,7 +253,7 @@ public class LayoutHelper {
             }
         }
         else {
-            return CGFloat((value as NSString).floatValue)
+            return (value as NSString).floatValue
         }
     }
     
@@ -258,7 +269,7 @@ public class LayoutHelper {
             return self.view
         }
         else {
-            if let view = subviews[key] {
+            if let view = subviews[key] as? UIView {
                 return view
             }
             else {

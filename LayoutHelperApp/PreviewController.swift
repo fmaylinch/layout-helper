@@ -671,5 +671,19 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         let label = lbl as! UILabel
         label.text = "I'm a label"
         //lay.addViews(["l":label]).addConstraints(["V:[b]-[l]"])
+        
+        
+        
+        print("Info about label font:")
+        let font = label.font
+        print(" - familyName: \(font.familyName)")
+        print(" - fontName: \(font.fontName)")
+        print(" - pointSize: \(font.pointSize)")
+        print(" - ascender: \(font.ascender)")
+        print(" - descender: \(font.descender)")
+        print(" - capHeight: \(font.capHeight)")
+        print(" - xHeight: \(font.xHeight)")
+        print(" - lineHeight: \(font.lineHeight)")
+        print(" - leading: \(font.leading)")
     }
 }
