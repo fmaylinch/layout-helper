@@ -86,7 +86,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
     // Executed after parseText when coming from parseUrl
     private func staticChangesAfterParseUrl()
     {
-        print("Adding changes after parseUrl")
+        // print("Adding changes after parseUrl")
         
         // guard let lay = getLayout("lay") else { return }
     }
@@ -188,7 +188,9 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    private func parseUrl(urlStr: String) {
+    private func parseUrl(urlStr0: String) {
+        
+        let urlStr = urlStr0 + "?timestamp=\(NSDate().timeIntervalSince1970)" // to avoid cache
         
         print("Reading content from url: \(urlStr)")
         
@@ -347,7 +349,7 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         guard letVarAvailable(variable) else { return }
 
         print("Creating color `\(variable)` with rgba(\(red), \(green), \(blue), \(alpha)")
-        let color = ViewUtil.color(red: red, green: green, blue: blue, alpha: alpha)
+        let color = ViewUtil.color(red: UInt(red), green: UInt(green), blue: UInt(blue), alpha: alpha)
         
         objects[variable] = color
     }
@@ -637,5 +639,37 @@ class PreviewController: UIViewController, UIGestureRecognizerDelegate {
         let v = UIViewClass.init() // Should now give you a new object
         // let method = UIViewClass.methodForSelector(Selector("backgroundColor"))
         v.performSelector(Selector(""), withObject: "")
+        
+        
+        let butt = ReflectionHelper.instanceFromClass("UIButton") as! UIButton
+        
+        // convencience function to convert to array of raw values
+        func raw(types: [ArgType]) -> [Int] {
+            return types.map({$0.rawValue})
+        }
+        
+        reflectionHelper.invoke(
+            Selector("setTitle:forState:"), on:butt,
+            args:["reflected", UIControlState.Normal.rawValue],
+            argTypes: raw([.Object, .Integer]))
+        
+        reflectionHelper.invoke(
+            Selector("setTitleColor:forState:"), on:butt,
+            args:[UIColor.greenColor(), UIControlState.Normal.rawValue],
+            argTypes: raw([.Object, .Integer]))
+        
+
+        
+        // This doesn't work, maybe because we're trying to invoke a static method
+        // but most probably because ViewUtil is not an objc class
+        
+        let lbl = reflectionHelper.invoke(
+            Selector("labelWithSize:"), on: ViewUtil.self,
+            args: [20],
+            argTypes: [ArgType.Float.rawValue])
+        
+        let label = lbl as! UILabel
+        label.text = "I'm a label"
+        //lay.addViews(["l":label]).addConstraints(["V:[b]-[l]"])
     }
 }

@@ -1,5 +1,13 @@
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSInteger, ArgType) {
+    ArgTypeObject,
+    ArgTypeInteger,
+    ArgTypeFloat,
+    ArgTypeDouble,
+    ArgTypeBool
+};
 
 @interface ReflectionHelper : NSObject
 
@@ -15,6 +23,8 @@
 + (id) instanceFromClass:(NSString*)clazz;
 
 - (instancetype) initWithObjects:(NSMutableDictionary<NSString*,NSObject*>*)objects;
+
+- (id) invoke:(SEL)selector on:(id)target args:(NSArray<id>*)args argTypes:(NSArray<NSNumber*>*)argTypes;
 
 /** 
  * Parses and executes an assignment like "target = value"

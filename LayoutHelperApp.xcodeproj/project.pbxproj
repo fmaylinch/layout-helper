@@ -26,6 +26,7 @@
 		7C4363AA1C01445500EAF293 /* CodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363A91C01445500EAF293 /* CodeController.swift */; };
 		7C4363AD1C02305000EAF293 /* String+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363AC1C02305000EAF293 /* String+Utils.swift */; };
 		7C4363B31C02A04100EAF293 /* RegexResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4363B21C02A04100EAF293 /* RegexResult.swift */; };
+		7CBD38BA1C0F270D0062F258 /* gym_map_pin_pink.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CBD38B91C0F270D0062F258 /* gym_map_pin_pink.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,9 @@
 		7C4363AC1C02305000EAF293 /* String+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Utils.swift"; sourceTree = "<group>"; };
 		7C4363B01C02617F00EAF293 /* layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = layout.swift; sourceTree = "<group>"; };
 		7C4363B21C02A04100EAF293 /* RegexResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexResult.swift; sourceTree = "<group>"; };
+		7CBD38B91C0F270D0062F258 /* gym_map_pin_pink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gym_map_pin_pink.png; sourceTree = "<group>"; };
+		7CBD38BB1C0F519C0062F258 /* layout-statement-examples.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "layout-statement-examples.swift"; sourceTree = "<group>"; };
+		7CBD38BD1C10A73D0062F258 /* layout-example.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "layout-example.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,7 @@
 		7C34901A1C0CA32400F37775 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				7CBD38B91C0F270D0062F258 /* gym_map_pin_pink.png */,
 				7C34901B1C0CA34600F37775 /* events-filter@2x.png */,
 			);
 			name = Images;
@@ -133,7 +138,7 @@
 		7C4363831C000A7500EAF293 /* LayoutHelperApp */ = {
 			isa = PBXGroup;
 			children = (
-				7C4363B01C02617F00EAF293 /* layout.swift */,
+				7CBD38BF1C10AF300062F258 /* Layouts */,
 				7C1E27771C08816B00C848E5 /* Controllers */,
 				7C1E27761C08815B00C848E5 /* Util */,
 				7C4363981C000C3A00EAF293 /* Fonts */,
@@ -158,6 +163,16 @@
 				7C43639B1C000C6A00EAF293 /* ShareTech-Regular.ttf */,
 			);
 			name = Fonts;
+			sourceTree = "<group>";
+		};
+		7CBD38BF1C10AF300062F258 /* Layouts */ = {
+			isa = PBXGroup;
+			children = (
+				7C4363B01C02617F00EAF293 /* layout.swift */,
+				7CBD38BD1C10A73D0062F258 /* layout-example.swift */,
+				7CBD38BB1C0F519C0062F258 /* layout-statement-examples.swift */,
+			);
+			name = Layouts;
 			sourceTree = "<group>";
 		};
 		E398245CF89BB4DFDAB24927 /* Pods */ = {
@@ -204,6 +219,7 @@
 				TargetAttributes = {
 					7C4363801C000A7500EAF293 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = 25D86TPBWG;
 					};
 				};
 			};
@@ -235,6 +251,7 @@
 				7C4363A21C00157A00EAF293 /* ShareTech-Regular.ttf in Resources */,
 				7C43638F1C000A7500EAF293 /* LaunchScreen.storyboard in Resources */,
 				7C34901C1C0CA34600F37775 /* events-filter@2x.png in Resources */,
+				7CBD38BA1C0F270D0062F258 /* gym_map_pin_pink.png in Resources */,
 				7C43638C1C000A7500EAF293 /* Assets.xcassets in Resources */,
 				7C43638A1C000A7500EAF293 /* Main.storyboard in Resources */,
 			);
@@ -420,11 +437,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = LayoutHelperApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fmaylinch.LayoutHelperApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "LayoutHelperApp/LayoutHelperApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -437,11 +457,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = LayoutHelperApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fmaylinch.LayoutHelperApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "LayoutHelperApp/LayoutHelperApp-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

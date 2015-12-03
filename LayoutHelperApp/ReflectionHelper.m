@@ -2,6 +2,9 @@
 #import "ReflectionHelper.h"
 //#import "LayoutHelperApp-Swift.h"
 
+// invocation args start at this index
+#define ARGS_SHIFT 2
+
 @implementation ReflectionHelper
 
 + (id) getProperty:(NSString*)name target:(NSObject*)target {
@@ -22,6 +25,73 @@
     self.objects = objects;
     return self;
 }
+
+- (id) invoke:(SEL)selector on:(id)target args:(NSArray<id>*)args argTypes:(NSArray<NSNumber*>*)argTypes {
+
+    NSMethodSignature* signature = [target methodSignatureForSelector:selector];
+    NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
+    
+    [invocation setTarget:target];
+    [invocation setSelector:selector];
+    
+    // Prepare arrays for supported types, to keep references for `setArgument`
+    id objects[args.count];
+    float floats[args.count];
+    double doubles[args.count];
+    BOOL booleans[args.count];
+    NSInteger integers[args.count];
+    
+    for (int i=0; i<args.count; i++)
+    {
+        id arg = args[i];
+        
+        NSNumber* argTypeObj = argTypes[i];
+        ArgType argType = argTypeObj.integerValue;
+        
+        int index = i + ARGS_SHIFT;
+        
+        switch (argType) {
+                
+            case ArgTypeObject:
+                objects[i] = arg;
+                [invocation setArgument:&objects[i] atIndex:index];
+                break;
+                
+            case ArgTypeInteger:
+                integers[i] = ((NSNumber*)arg).integerValue;
+                [invocation setArgument:&integers[i] atIndex:index];
+                break;
+
+            case ArgTypeFloat:
+                floats[i] = ((NSNumber*)arg).floatValue;
+                [invocation setArgument:&floats[i] atIndex:index];
+                break;
+                
+            case ArgTypeDouble:
+                doubles[i] = ((NSNumber*)arg).doubleValue;
+                [invocation setArgument:&doubles[i] atIndex:index];
+                break;
+
+            case ArgTypeBool:
+                booleans[i] = ((NSNumber*)arg).boolValue;
+                [invocation setArgument:&booleans[i] atIndex:index];
+                break;
+
+            default:
+                [NSException raise:@"Invalid ArgType" format:@"Unexpected ArgType: %ld", (long)argType];
+                break;
+        }
+    }
+    
+    [invocation invoke];
+    
+    // TODO: it crashes, maybe because some results are void
+    id result = nil;
+    // [invocation getReturnValue:&result];
+    
+    return result;
+}
+
 
 - (void) performAssignment:(NSString*)target value:(NSString*)value {
     
