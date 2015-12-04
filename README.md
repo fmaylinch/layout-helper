@@ -9,6 +9,7 @@ You can build your layout using the supported statements (see [examples](https:/
 
 Here you will find utility classes like [LayoutHelper](https://github.com/fmaylinch/layout-helper/blob/master/LayoutHelperApp/LayoutHelper.swift). You can take it and use it in your projects like this:
 
+```objectivec
     let label1 = UILabel()
     let label2 = UILabel()
     let container = UIView()
@@ -23,6 +24,7 @@ Here you will find utility classes like [LayoutHelper](https://github.com/fmayli
             "V:|-[lbl2]-|",
             "X:lbl1.width == parent.width / 4"
             ])
+```
 
 The last constraint, `"X:lbl1.width == parent.width / 4"`, is a special extended constraint supported by `LayoutHelper`. Its format is:
 
