@@ -1,4 +1,6 @@
 
+**Note: This app is unmaintained. Check my simplified and updated [LayoutHelperApp](https://github.com/fmaylinch/LayoutHelperApp).**
+
 #LayoutHelperApp
 
 This is a experimental app to play with programmatic autolayout.
